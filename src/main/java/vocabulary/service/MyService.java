@@ -14,7 +14,7 @@ import java.util.Collections;
 public class MyService {
     // https://platform.openai.com/docs/models/model-endpoint-compatibility
     public String getText(String word) {
-        String token = "";
+        String token = "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";
         OpenAiService service = new OpenAiService(token);
 
         ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
