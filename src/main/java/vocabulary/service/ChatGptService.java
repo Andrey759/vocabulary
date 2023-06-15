@@ -12,14 +12,14 @@ import java.util.Collections;
 public class ChatGptService {
     // https://platform.openai.com/docs/models/model-endpoint-compatibility
     public String getText(String word) {
-        String token = "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";
+        String token = "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";
         OpenAiService service = new OpenAiService(token);
 
         ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
-                .model("gpt-4")
+                .model("gpt-3.5-turbo")
                 .messages(Collections.singletonList(new ChatMessage("user", "Generate please a simple sentence with the word '" + word + "' which would be clear to understand that word meaning.")))
                 //.echo(false)
-                .user("anonim1234567890987654321")
+                .user("andrey759")
                 .n(1)
                 .build();
         return service.createChatCompletion(completionRequest)

@@ -9,22 +9,67 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
             integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
             crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
-            crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=0wYGUaTd"></script>
     <script src="http://code.jquery.com/jquery-git2.js"></script>
+    <style>
+        .float-right {
+            float: right;
+        }
+        .card {
+            border:none;
+            text-align: center;
+            border-top-left-radius: 1em;
+            border-top-right-radius: 1em;
+            box-shadow: 0px 0px 10px teal;
+        }
+        .card img {
+            border-top-left-radius: 10em;
+            border-top-right-radius: 10em;
+        }
+        .card .btn {
+            padding: 0.75em 0.5em;
+            border-radius: 0;
+        }
+        .color-teal {
+            background-color: teal !important;
+            border-color: teal !important;
+        }
+        .color-teal-blue {
+            background-color: #29A0B1 !important;
+            border-color: #29A0B1 !important;
+        }
+        .color-teal-dark {
+            background-color: #175873 !important;
+            border-color: #175873 !important;
+        }
+    </style>
 </head>
-<body class="bg-dark">
+<body class="bg-dark" style="padding: 5px">
+<button class="btn btn-success btn-lg" v-on:click="sendMessage">+</button>
 <br/><br/>
-<div class="container text-secondary" id="app">
+<!--<div class="container bg-secondary">1/50</div>-->
+<!--<div class="container text-secondary" id="app">
     <h2>{{ text }}</h2>
-    <button v-on:click="sendMessage" class="btn-primary">Btn</button>
+</div>-->
+<div class="card content m-auto" style="width: 36rem; align-self: center" id="card">
+    <!--<img src="..." class="card-img-top" alt="...">-->
+    <div class="card-body">
+        <p class="text-muted">1 / 50</p>
+        <p></p>
+        <!--<h5 class="card-title fw-bold">Card title</h5>-->
+        <p class="card-text">{{ text }}</p>
+        <p></p>
+    </div>
+    <div class="btn-group">
+        <a href="#" class="btn color-teal-blue">Repeat</a>
+        <a href="#" class="btn color-teal">Finish</a>
+        <a href="#" class="btn color-teal-dark" v-on:click="sendMessage">Next</a>
+    </div>
 </div>
 <script>
-    var app = new Vue({
-        el: '#app',
+    var card = new Vue({
+        el: '#card',
         data: {
             text: 'Loading...'
         },
@@ -34,8 +79,10 @@
                     .then(response => response.text())
                     .then(response => {
                         this.text = response;
-                        responsiveVoice.allowSpeechClicked(true);
                         responsiveVoice.cancel();
+                        setTimeout(() => { responsiveVoice.allowSpeechClicked(true); }, 1000);
+                            /*responsiveVoice.allowSpeechClicked(true);*/
+
                         responsiveVoice.speak(response, 'UK English Male', {rate: 0.8, volume: 1, onend: function () {
                                 responsiveVoice.cancel();
                                 responsiveVoice.speak(response, 'UK English Male', {rate: 0.8, volume: 1});

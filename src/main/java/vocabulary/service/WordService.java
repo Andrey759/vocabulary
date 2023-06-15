@@ -8,12 +8,20 @@ import vocabulary.repository.WordRepository;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class WordService {
+    private final Map<String, List<Word>> wordsCash = new HashMap<>();
     private final WordRepository wordRepository;
+
+    @Transactional(readOnly = true)
+    public void updateWordCash() {
+        wordsCash.put("andrey759", wordRepository.findAll());
+    }
 
     @Transactional
     public Word addNewWord(String newWord) {
