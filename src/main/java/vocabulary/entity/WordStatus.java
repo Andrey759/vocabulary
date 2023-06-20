@@ -1,6 +1,6 @@
 package vocabulary.entity;
 
-public enum StatusType {
+public enum WordStatus {
     NOT_STARTED,
     LEARNING,
     THREE_DAYS,

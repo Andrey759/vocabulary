@@ -3,9 +3,7 @@ package vocabulary.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vocabulary.entity.Word;
 import vocabulary.service.ChatGptService;
 import vocabulary.service.WordService;
@@ -18,6 +16,13 @@ import java.util.List;
 public class ApiController {
     private final WordService wordService;
     private final ChatGptService chatGptService;
+
+    @PostMapping("/api/add")
+    public ResponseEntity<String> add(@RequestBody String text) {
+        log.info("Body={}", text);
+        //return ResponseEntity.ok(wordService.addNewWord(text));
+        return ResponseEntity.ok("OK");
+    }
 
     @GetMapping("/api/text")
     public ResponseEntity<String> text() {

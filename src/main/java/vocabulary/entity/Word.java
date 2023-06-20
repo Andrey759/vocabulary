@@ -19,5 +19,5 @@ public class Word {
     private String username = "andrey759";
     private String text;
     @Enumerated(value = EnumType.STRING)
-    private StatusType status;
+    private WordStatus status;
 }

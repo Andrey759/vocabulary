@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:>
 <head>
     <meta charset="UTF-8">
     <title>Employee</title>
@@ -13,6 +13,9 @@
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=0wYGUaTd"></script>
     <script src="http://code.jquery.com/jquery-git2.js"></script>
     <style>
+        .rvNotification {
+            display: none;
+        }
         .float-right {
             float: right;
         }
@@ -46,12 +49,20 @@
     </style>
 </head>
 <body class="bg-dark" style="padding: 5px">
-<button class="btn btn-success btn-lg" v-on:click="sendMessage">+</button>
-<br/><br/>
-<!--<div class="container bg-secondary">1/50</div>-->
-<!--<div class="container text-secondary" id="app">
-    <h2>{{ text }}</h2>
-</div>-->
+
+
+<div class="form-row" id="new-word">
+    <div class="col">
+        <input type="text" class="form-control" v-model="value"/>
+    </div>
+    <div class="col">
+        <button class="form-control btn btn-success btn-lg" v-on:click="sendWord">+</button>
+    </div>
+</div>
+
+<br/>
+<br/>
+
 <div class="card content m-auto" style="width: 36rem; align-self: center" id="card">
     <!--<img src="..." class="card-img-top" alt="...">-->
     <div class="card-body">
@@ -67,7 +78,26 @@
         <a href="#" class="btn color-teal-dark" v-on:click="sendMessage">Next</a>
     </div>
 </div>
+
+
 <script>
+    var resp;
+    var newWord = new Vue({
+        el: '#new-word',
+        methods: {
+            sendWord: function () {
+                const xhr = new XMLHttpRequest()
+                xhr.open('POST', 'http://localhost:8080/api/add')
+                xhr.setRequestHeader('Content-Type', 'application/json')
+                xhr.onreadystatechange = function() {
+                    console.log(xhr.status);
+                    console.log(xhr.response);
+                }
+                xhr.send(this.value);
+            }
+        },
+    })
+
     var card = new Vue({
         el: '#card',
         data: {
@@ -79,20 +109,22 @@
                     .then(response => response.text())
                     .then(response => {
                         this.text = response;
-                        responsiveVoice.cancel();
-                        setTimeout(() => { responsiveVoice.allowSpeechClicked(true); }, 1000);
                             /*responsiveVoice.allowSpeechClicked(true);*/
-
+/*
                         responsiveVoice.speak(response, 'UK English Male', {rate: 0.8, volume: 1, onend: function () {
                                 responsiveVoice.cancel();
                                 responsiveVoice.speak(response, 'UK English Male', {rate: 0.8, volume: 1});
-                            }});
+                            }});*/
                         /* responsiveVoice.setDefaultRate(0.5); setDefaultVoice */
                     })
                     .catch((error => console.error(error)));
             }
         },
         created: function () {
+            responsiveVoice.cancel();
+            responsiveVoice.speak('');
+            setTimeout(() => { responsiveVoice.allowSpeechClicked(true); }, 300);
+            setTimeout(() => { responsiveVoice.allowSpeechClicked(true); }, 1000);
             this.sendMessage();
         }
     })
