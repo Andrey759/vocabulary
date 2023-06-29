@@ -1,46 +1,54 @@
 package vocabulary.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vocabulary.controller.dto.CardDto;
 import vocabulary.controller.enums.AddNewWordResult;
 import vocabulary.entity.Word;
+import vocabulary.entity.enums.WordStatus;
 import vocabulary.repository.WordRepository;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Stream;
 
-import static java.time.temporal.ChronoField.MILLI_OF_DAY;
 import static vocabulary.controller.enums.AddNewWordResult.ADDED;
 import static vocabulary.controller.enums.AddNewWordResult.STATUS_UPDATED;
-import static vocabulary.entity.enums.WordStatus.NOT_STARTED;
+import static vocabulary.entity.enums.WordStatus.LEARNING;
 
 @Service
 @RequiredArgsConstructor
 public class WordService {
-    private final Map<String, List<Word>> wordsCash = new HashMap<>();
+    private final Map<String, List<CardDto>> cardCash = new HashMap<>();
     private final WordRepository wordRepository;
+    private final ChatGptService chatGptService;
 
     @Transactional(readOnly = true)
-    public void updateWordCash() {
-        wordsCash.put("andrey759", wordRepository.findAll());
+    public void updateCardCash() {
+        List<CardDto> cardsOld = cardCash.getOrDefault("andrey759", Collections.emptyList());
+        List<CardDto> cardsNew = wordRepository.findByReadyAtLessThan(LocalDateTime.now())
+                .stream()
+                .map(word -> cardsOld.stream()
+                        .filter(card -> Objects.equals(card.getWord(), word.getText()))
+                        .findFirst()
+                        .orElse(chatGptService.createCard(word.getText()))
+                )
+                .toList();
+        cardCash.put("andrey759", cardsNew);
     }
 
     @Transactional
-    public AddNewWordResult addNewWord(String text) {
-        Optional<Word> wordOptional = wordRepository.findByText(text);
+    public AddNewWordResult addNewWord(String word) {
+        Optional<Word> wordOptional = wordRepository.findByText(word);
         if (wordOptional.isPresent()) {
-            wordOptional.get().setStatus(NOT_STARTED);
+            wordOptional.get().setStatus(LEARNING);
             wordRepository.save(wordOptional.get());
-            updateWordCash();
+            updateCardCash();
             return STATUS_UPDATED;
         }
 
-        Long id = LocalDateTime.now().getLong(MILLI_OF_DAY);
-        wordRepository.save(Word.builder().id(id).text(text).status(NOT_STARTED).build());
-        updateWordCash();
+        wordRepository.save(Word.create(word));
+        updateCardCash();
         return ADDED;
     }
 
@@ -50,20 +58,20 @@ public class WordService {
     }
 
     @Transactional
-    public String getNext(String text) {
+    public CardDto getNext(String word) {
 
-        updateWordCash();
+        updateCardCash();
 
-        Word word = getUserWords().stream()
-                .filter(w -> Objects.equals(w.getText(), text))
+        CardDto card = getUserCards().stream()
+                .filter(w -> Objects.equals(w.getWord(), word))
                 .findFirst()
                 .orElse(null);
 
-        if (word != null) {
-            wordRepository.save(word.nextStatus());
-            updateWordCash();
+        if (card != null) {
+            nextStatus(card.getWord());
+            updateCardCash();
         }
-        return getUserWords().size() >= 1 ? getUserWords().get(0).getText() : null;
+        return getUserCards().size() >= 1 ? getUserCards().get(0) : CardDto.EMPTY;
     }
 
     @Transactional(readOnly = true)
@@ -71,7 +79,18 @@ public class WordService {
         return wordRepository.findAll();
     }
 
-    private List<Word> getUserWords() {
-        return wordsCash.get("andrey759");
+    private List<CardDto> getUserCards() {
+        return cardCash.get("andrey759");
+    }
+    private void nextStatus(String wordValue) {
+        wordRepository.findByText(wordValue)
+                .map(word -> {
+                    WordStatus newStatus = word.getStatus().nextStatus();
+                    word.setStatus(newStatus);
+                    word.setUpdatedAt(LocalDateTime.now());
+                    word.setReadyAt(newStatus.readyAt());
+                    return word;
+                })
+                .map(wordRepository::save);
     }
 }

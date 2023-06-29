@@ -8,6 +8,8 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @ToString
 public class CardDto {
+    public static CardDto EMPTY = new CardDto("", "", "", "");
+
     private final String word;
     private final String text;
     private final String explanation;

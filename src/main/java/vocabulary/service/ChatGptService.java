@@ -8,6 +8,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.util.StringUtils;
+import vocabulary.controller.dto.CardDto;
 
 import java.util.Collections;
 
@@ -20,6 +21,15 @@ public class ChatGptService {
     @PostConstruct
     public void postConstruct() {
         service = new OpenAiService(gptToken);
+    }
+
+    public CardDto createCard(String word) {
+        return new CardDto(
+                word,
+                getText(word),
+                null,
+                null
+        );
     }
 
     // https://platform.openai.com/docs/models/model-endpoint-compatibility

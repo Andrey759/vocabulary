@@ -13,7 +13,6 @@ import vocabulary.service.ChatGptService;
 import vocabulary.service.WordService;
 
 import java.util.List;
-import java.util.Objects;
 
 import static vocabulary.controller.enums.AddNewWordResult.ADDED;
 
@@ -47,13 +46,12 @@ public class ApiController {
         return ResponseEntity.ok(chatGptText);
     }
 
-    @GetMapping("/api/complete/{text}")
-    public ResponseEntity<String> complete(@PathVariable String text) {
-        log.info("GET /api/complete/{}", text);
-        String wordText = wordService.getNext(text);
-        String chatGptText = chatGptService.getText(wordText);
-        log.info("GET /api/complete/{} Response {}", text, chatGptText);
-        return ResponseEntity.ok(chatGptText);
+    @GetMapping("/api/complete/{word}")
+    public ResponseEntity<CardDto> complete(@PathVariable String word) {
+        log.info("GET /api/complete/{}", word);
+        CardDto card = wordService.getNext(word);
+        log.info("GET /api/complete/{} Response {}", word, card);
+        return ResponseEntity.ok(card);
     }
 
     @GetMapping("/api/next/")
@@ -61,14 +59,13 @@ public class ApiController {
         return next("");
     }
 
-    @GetMapping("/api/next/{text}")
-    public ResponseEntity<CardDto> next(@PathVariable(required = false) String text) {
-        log.info("GET /api/next/{}", text);
+    @GetMapping("/api/next/{word}")
+    public ResponseEntity<CardDto> next(@PathVariable(required = false) String word) {
+        log.info("GET /api/next/{}", word);
         //String text = chatGptService.getText("rehearsal");
-        String wordText = wordService.getNext(text);
-        String chatGptText = chatGptService.getText(wordText);
-        log.info("GET /api/next/{} Response {}", text, chatGptText);
-        return ResponseEntity.ok(new CardDto(wordText, chatGptText, null, null));
+        CardDto card = wordService.getNext(word);
+        log.info("GET /api/next/{} Response {}", word, card);
+        return ResponseEntity.ok(card);
     }
 
     @GetMapping("/api/get")

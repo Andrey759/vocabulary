@@ -14,6 +14,6 @@ public class WordScheduler {
     @PostConstruct
     @Scheduled(cron = "0 0 0 * * *")
     public void updateWordCash() {
-        wordService.updateWordCash();
+        wordService.updateCardCash();
     }
 }

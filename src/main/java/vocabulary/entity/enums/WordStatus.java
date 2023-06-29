@@ -1,22 +1,31 @@
 package vocabulary.entity.enums;
 
-import java.util.Arrays;
+import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.function.Function;
+
+@RequiredArgsConstructor
 public enum WordStatus {
-    NOT_STARTED,
-    LEARNING,
-    THREE_DAYS,
-    ONE_WEEK,
-    TWO_WEEKS,
-    ONE_MONTH,
-    TWO_MONTHS,
-    FOUR_MONTHS,
-    ONE_YEAR,
-    INFINITY,
+    LEARNING(dt -> dt.plusHours(6L)),
+    THREE_DAYS(dt -> dt.plusDays(3L)),
+    ONE_WEEK(dt -> dt.plusWeeks(1L)),
+    TWO_WEEKS(dt -> dt.plusWeeks(2L)),
+    ONE_MONTH(dt -> dt.plusMonths(1L)),
+    TWO_MONTHS(dt -> dt.plusMonths(2L)),
+    FOUR_MONTHS(dt -> dt.plusMonths(4L)),
+    ONE_YEAR(dt -> dt.plusYears(1L)),
+    INFINITY(dt -> LocalDateTime.MAX),
     ;
 
-    public WordStatus next() {
+    private final Function<LocalDateTime, LocalDateTime> func;
+
+    public WordStatus nextStatus() {
         int index = Arrays.asList(values()).indexOf(this);
         return values()[index + 1];
+    }
+    public LocalDateTime readyAt() {
+        return func.apply(LocalDateTime.now());
     }
 }
