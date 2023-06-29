@@ -5,6 +5,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import lombok.*;
+import vocabulary.entity.enums.WordStatus;
 
 @Entity
 @Getter
@@ -20,4 +21,9 @@ public class Word {
     private String text;
     @Enumerated(value = EnumType.STRING)
     private WordStatus status;
+
+    public Word nextStatus() {
+        this.status = status.next();
+        return this;
+    }
 }
