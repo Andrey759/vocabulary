@@ -7,50 +7,50 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import vocabulary.controller.dto.CardDto;
-import vocabulary.controller.enums.AddNewWordResult;
-import vocabulary.entity.Word;
-import vocabulary.service.ChatGptService;
+import vocabulary.controller.enums.AddedOrReset;
+import vocabulary.entity.Card;
 import vocabulary.service.WordService;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
-import static vocabulary.controller.enums.AddNewWordResult.ADDED;
+import static vocabulary.controller.enums.AddedOrReset.ADDED;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 public class ApiController {
     private final WordService wordService;
-    private final ChatGptService chatGptService;
 
-    @GetMapping("/api/add/{text}")
-    public ResponseEntity<String> add(@PathVariable String text) {
-        log.info("GET /api/add/{}", text);
-        AddNewWordResult result = wordService.addNewWord(text);
-        log.info("GET /api/delete/{} Response {}", text, result);
-        return ResponseEntity.ok(wordService.addNewWord(text) == ADDED ? "✔" : "Status updated");
+    @GetMapping("/api/add/{word}")
+    public ResponseEntity<String> add(@PathVariable String word) {
+        log.info("GET /api/add/{}", word);
+        AddedOrReset result = wordService.addOrReset(word);
+        log.info("GET /api/delete/{} Response {}", word, result);
+        return ResponseEntity.ok(result == ADDED ? "✔" : "Status updated");
     }
 
-    @GetMapping("/api/delete/{text}")
-    public ResponseEntity<String> delete(@PathVariable String text) {
-        log.info("GET /api/delete/{}", text);
-        wordService.delete(text);
+    @GetMapping("/api/delete/{word}")
+    public ResponseEntity<String> delete(@PathVariable String word) {
+        log.info("GET /api/delete/{}", word);
+        wordService.delete(word);
         return ResponseEntity.ok("OK");
     }
 
-    @GetMapping("/api/another/{text}")
-    public ResponseEntity<String> another(@PathVariable String text) {
-        log.info("GET /api/another/{}", text);
-        String chatGptText = chatGptService.getText(text);
-        log.info("GET /api/another/{} Response {}", text, chatGptText);
-        return ResponseEntity.ok(chatGptText);
+    @GetMapping("/api/reset/{word}")
+    public ResponseEntity<CardDto> reset(@PathVariable String word) {
+        log.info("GET /api/reset/{}", word);
+        CardDto cardDto = wordService.reset(word);
+        log.info("GET /api/reset/{} Response {}", word, cardDto);
+        return ResponseEntity.ok(cardDto);
     }
 
-    @GetMapping("/api/complete/{word}")
-    public ResponseEntity<CardDto> complete(@PathVariable String word) {
-        log.info("GET /api/complete/{}", word);
-        CardDto card = wordService.getNext(word);
-        log.info("GET /api/complete/{} Response {}", word, card);
+    @GetMapping("/api/another/{word}")
+    public ResponseEntity<CardDto> another(@PathVariable String word) {
+        log.info("GET /api/another/{}", word);
+        CardDto card = wordService.another(word);
+        log.info("GET /api/another/{} Response {}", word, card);
         return ResponseEntity.ok(card);
     }
 
@@ -62,17 +62,23 @@ public class ApiController {
     @GetMapping("/api/next/{word}")
     public ResponseEntity<CardDto> next(@PathVariable(required = false) String word) {
         log.info("GET /api/next/{}", word);
-        //String text = chatGptService.getText("rehearsal");
-        CardDto card = wordService.getNext(word);
+        CardDto card = wordService.next(word);
         log.info("GET /api/next/{} Response {}", word, card);
         return ResponseEntity.ok(card);
     }
 
     @GetMapping("/api/get")
-    public ResponseEntity<List<Word>> get() {
+    public ResponseEntity<List<Card>> get() {
         log.info("GET /api/get");
-        List<Word> words = wordService.getAll();
-        log.info("GET /api/get Response {}", words);
-        return ResponseEntity.ok(words);
+        List<Card> cards = wordService.findAll();
+        log.info("GET /api/get Response {}", cards);
+        return ResponseEntity.ok(cards);
+    }
+
+    @GetMapping("/api/chat/{newMessage}")
+    public ResponseEntity<Map<String, Object>> chat(@PathVariable(required = false) String newMessage) {
+        log.info("GET /api/chat/{}", newMessage);
+        //log.info("GET /api/next/{} Response {}", word, card);
+        return ResponseEntity.ok(Map.of("messages", Collections.emptyList()));
     }
 }

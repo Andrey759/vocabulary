@@ -1,6 +1,6 @@
 package vocabulary.controller.enums;
 
-public enum AddNewWordResult {
+public enum AddedOrReset {
     ADDED,
-    STATUS_UPDATED,
+    RESET,
 }

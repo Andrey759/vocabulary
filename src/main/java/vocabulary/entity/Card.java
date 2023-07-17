@@ -5,12 +5,13 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import lombok.*;
-import vocabulary.entity.enums.WordStatus;
+import vocabulary.entity.enums.CardStatus;
 
 import java.time.LocalDateTime;
 
+import static jakarta.persistence.EnumType.STRING;
 import static java.time.temporal.ChronoField.MILLI_OF_DAY;
-import static vocabulary.entity.enums.WordStatus.LEARNING;
+import static vocabulary.entity.enums.CardStatus.LEARNING;
 
 @Entity
 @Getter
@@ -19,23 +20,25 @@ import static vocabulary.entity.enums.WordStatus.LEARNING;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Word {
+public class Card {
     @Id
     private Long id;
     private String username;
-    private String text;
-    @Enumerated(value = EnumType.STRING)
-    private WordStatus status;
-    private LocalDateTime updatedAt;
+    private String word;
+    private String sentence;
+    private String sentenceHtml;
+    private String explanationHtml;
+    private String translationHtml;
+    @Enumerated(value = STRING)
+    private CardStatus status;
     private LocalDateTime readyAt;
 
-    public static Word create(String word) {
-        return Word.builder()
+    public static Card create(String word) {
+        return Card.builder()
                 .id(LocalDateTime.now().getLong(MILLI_OF_DAY))
-                .username("andrey759")
-                .text(word)
+                .username(User.getCurrent())
+                .word(word)
                 .status(LEARNING)
-                .updatedAt(LocalDateTime.now())
                 .readyAt(LocalDateTime.now())
                 .build();
     }

@@ -1,96 +1,110 @@
 package vocabulary.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vocabulary.controller.dto.CardDto;
-import vocabulary.controller.enums.AddNewWordResult;
-import vocabulary.entity.Word;
-import vocabulary.entity.enums.WordStatus;
+import vocabulary.controller.enums.AddedOrReset;
+import vocabulary.entity.User;
+import vocabulary.entity.Card;
+import vocabulary.entity.enums.CardStatus;
 import vocabulary.repository.WordRepository;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
-import static vocabulary.controller.enums.AddNewWordResult.ADDED;
-import static vocabulary.controller.enums.AddNewWordResult.STATUS_UPDATED;
-import static vocabulary.entity.enums.WordStatus.LEARNING;
+import static vocabulary.controller.dto.CardDto.EMPTY;
+import static vocabulary.controller.enums.AddedOrReset.ADDED;
+import static vocabulary.controller.enums.AddedOrReset.RESET;
+import static vocabulary.entity.enums.CardStatus.LEARNING;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class WordService {
-    private final Map<String, List<CardDto>> cardCash = new HashMap<>();
     private final WordRepository wordRepository;
     private final ChatGptService chatGptService;
 
-    @Transactional(readOnly = true)
-    public void updateCardCash() {
-        List<CardDto> cardsOld = cardCash.getOrDefault("andrey759", Collections.emptyList());
-        List<CardDto> cardsNew = wordRepository.findByReadyAtLessThan(LocalDateTime.now())
-                .stream()
-                .map(word -> cardsOld.stream()
-                        .filter(card -> Objects.equals(card.getWord(), word.getText()))
-                        .findFirst()
-                        .orElse(chatGptService.createCard(word.getText()))
-                )
-                .toList();
-        cardCash.put("andrey759", cardsNew);
+    @Transactional
+    public void updateAllEmptyFromChatGpt() {
+        wordRepository.findAllBySentenceIsNull()
+                .forEach(chatGptService::sendRequest);
     }
 
     @Transactional
-    public AddNewWordResult addNewWord(String word) {
-        Optional<Word> wordOptional = wordRepository.findByText(word);
-        if (wordOptional.isPresent()) {
-            wordOptional.get().setStatus(LEARNING);
-            wordRepository.save(wordOptional.get());
-            updateCardCash();
-            return STATUS_UPDATED;
+    public AddedOrReset addOrReset(String word) {
+        Optional<Card> cardOptional = wordRepository.findByUsernameAndWord(User.getCurrent(), word);
+        if (cardOptional.isPresent()) {
+            cardOptional.get().setStatus(LEARNING);
+            wordRepository.save(cardOptional.get());
+            return RESET;
         }
-
-        wordRepository.save(Word.create(word));
-        updateCardCash();
+        wordRepository.save(Card.create(word));
         return ADDED;
     }
 
     @Transactional
-    public void delete(String text) {
-        wordRepository.deleteByText(text);
+    public void delete(String word) {
+        wordRepository.deleteByUsernameAndWord(User.getCurrent(), word);
     }
 
     @Transactional
-    public CardDto getNext(String word) {
+    public CardDto reset(String word) {
+        wordRepository.findByUsernameAndWord(User.getCurrent(), word)
+                .map(this::fillFieldsForReset)
+                .map(wordRepository::save);
+        return getCardDtoToRepeat();
+    }
 
-        updateCardCash();
+    @Transactional
+    public CardDto another(String word) {
+        return wordRepository.findByUsernameAndWord(User.getCurrent(), word)
+                .map(chatGptService::sendRequest)
+                .map(wordRepository::save)
+                .map(CardDto::from)
+                .orElse(EMPTY);
+    }
 
-        CardDto card = getUserCards().stream()
-                .filter(w -> Objects.equals(w.getWord(), word))
-                .findFirst()
-                .orElse(null);
-
-        if (card != null) {
-            nextStatus(card.getWord());
-            updateCardCash();
-        }
-        return getUserCards().size() >= 1 ? getUserCards().get(0) : CardDto.EMPTY;
+    @Transactional
+    public CardDto next(String word) {
+        wordRepository.findByUsernameAndWord(User.getCurrent(), word)
+                .map(this::fillFieldsForNextStatus)
+                .map(wordRepository::save);
+        return getCardDtoToRepeat();
     }
 
     @Transactional(readOnly = true)
-    public List<Word> getAll() {
-        return wordRepository.findAll();
+    public List<Card> findAll() {
+        return wordRepository.findAllByUsername(User.getCurrent());
     }
 
-    private List<CardDto> getUserCards() {
-        return cardCash.get("andrey759");
+
+    private CardDto getCardDtoToRepeat() {
+        return wordRepository.findByUsernameAndReadyAtLessThan(User.getCurrent(), LocalDateTime.now())
+                .map(CardDto::from)
+                .orElse(EMPTY);
     }
-    private void nextStatus(String wordValue) {
-        wordRepository.findByText(wordValue)
-                .map(word -> {
-                    WordStatus newStatus = word.getStatus().nextStatus();
-                    word.setStatus(newStatus);
-                    word.setUpdatedAt(LocalDateTime.now());
-                    word.setReadyAt(newStatus.readyAt());
-                    return word;
-                })
-                .map(wordRepository::save);
+
+    private Card fillFieldsForReset(Card card) {
+        card.setSentence(null);
+        card.setSentenceHtml(null);
+        card.setExplanationHtml(null);
+        card.setTranslationHtml(null);
+        card.setStatus(LEARNING);
+        card.setReadyAt(LEARNING.readyAt());
+        return card;
+    }
+
+    private Card fillFieldsForNextStatus(Card card) {
+        CardStatus newStatus = card.getStatus().nextStatus();
+        card.setSentence(null);
+        card.setSentenceHtml(null);
+        card.setExplanationHtml(null);
+        card.setTranslationHtml(null);
+        card.setStatus(newStatus);
+        card.setReadyAt(newStatus.readyAt());
+        return card;
     }
 }

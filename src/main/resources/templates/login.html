@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:>
+<head>
+  <meta charset="UTF-8">
+  <title>Employee</title>
+  <!-- https://cdnjs.com/libraries -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.js"></script>
+  <script src="https://code.responsivevoice.org/responsivevoice.js?key=0wYGUaTd"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <title>Vocabulary</title>
+</head>
+<body class="bg-dark">
+<div class=""></div>
+<div class="content col input-group m-auto mt-5 text-white" style="width: 18rem">
+  <form th:action="@{/}" method="post">
+    <label for="username" class="m-1">Username</label>
+    <input type="text" id="username" name="username" autofocus="autofocus" class="form-control"/>
+    <label for="password" class="m-1">Password</label>
+    <input type="password" id="password" name="password" class="form-control"/>
+    <input type="submit" value="Sign in" th:formaction="@{/login}" class="btn btn-lg btn-success mt-3"/>
+    <input type="submit" value="Sign up" th:formaction="@{/register}" class="btn btn-lg btn-primary mt-3" style="marg-left: 4px"/>
+  </form>
+  <p class="text-success mt-3" th:if="${created}">User successfully created</p>
+  <p class="text-danger mt-3" th:if="${created} == false">User already exists</p>
+  <p class="text-danger mt-3" th:if="${param.get('error')} != null">Wrong user or password</p>
+</div>
+</body>
+</html>

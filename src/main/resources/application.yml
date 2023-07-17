@@ -11,8 +11,12 @@ spring:
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: create
-  sql:
-    init:
-      mode: always
+
+gpt:
+  model: gpt-3.5-turbo
+  message: |
+    Generate a sentence with the word '%s' that clearly conveys its meaning. Provide the answer in 4 lines:
+    1 - The sentence,
+    2 - The sentence with the word enclosed in the tags <b> and </b>,
+    3 - The explanation of the word's meaning,
+    4 - The Russian translation of the generated sentence with the word enclosed in the tags <b> and </b>

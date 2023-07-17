@@ -7,7 +7,8 @@ import java.util.Arrays;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
-public enum WordStatus {
+public enum CardStatus {
+    AWAITING_CHAT_GPT(dt -> dt),
     LEARNING(dt -> dt.plusHours(6L)),
     THREE_DAYS(dt -> dt.plusDays(3L)),
     ONE_WEEK(dt -> dt.plusWeeks(1L)),
@@ -21,7 +22,7 @@ public enum WordStatus {
 
     private final Function<LocalDateTime, LocalDateTime> func;
 
-    public WordStatus nextStatus() {
+    public CardStatus nextStatus() {
         int index = Arrays.asList(values()).indexOf(this);
         return values()[index + 1];
     }
