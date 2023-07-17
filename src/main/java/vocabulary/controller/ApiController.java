@@ -54,12 +54,7 @@ public class ApiController {
         return ResponseEntity.ok(card);
     }
 
-    @GetMapping("/api/next/")
-    public ResponseEntity<CardDto> next() {
-        return next("");
-    }
-
-    @GetMapping("/api/next/{word}")
+    @GetMapping({ "/api/next/", "/api/next/{word}" })
     public ResponseEntity<CardDto> next(@PathVariable(required = false) String word) {
         log.info("GET /api/next/{}", word);
         CardDto card = wordService.next(word);
@@ -75,7 +70,7 @@ public class ApiController {
         return ResponseEntity.ok(cards);
     }
 
-    @GetMapping("/api/chat/{newMessage}")
+    @GetMapping({ "/api/chat/", "/api/chat/{newMessage}" })
     public ResponseEntity<Map<String, Object>> chat(@PathVariable(required = false) String newMessage) {
         log.info("GET /api/chat/{}", newMessage);
         //log.info("GET /api/next/{} Response {}", word, card);

@@ -135,15 +135,16 @@
             <div class="card-body">
                 <div class="d-none"><p class="text-muted">1 / 50</p></div>
                 <!--<h5 class="card-title fw-bold">Card title</h5>-->
-                <p class="card-text" v-html="sentenceHtml"></p>
+                <i class="btn btn-lg bi bi-play-circle" style="display: inline" :class="{ 'bi-stop-circle': playing }" v-on:click="speak"></i>
+                <p class="card-text" style="display: inline" v-html="sentenceHtml"></p>
                 <p class="card-text" v-html="explanationHtml"></p>
                 <p class="card-text" v-html="translationHtml"></p>
                 <p></p>
             </div>
             <div class="btn-group">
-                <a href="#" class="btn btn-teal-blue" v-on:click="reset">I forgot</a>
-                <a href="#" class="btn btn-teal" v-on:click="another">Another context</a>
-                <a href="#" class="btn btn-teal-dark" v-on:click="next">I know</a>
+                <button class="btn btn-teal-blue" v-on:click="reset">I forgot</button>
+                <button class="btn btn-teal" v-on:click="another">Another context</button>
+                <button class="btn btn-teal-dark" v-on:click="next">I know</button>
             </div>
         </div>
     </div>
@@ -206,7 +207,8 @@
             sentence: '',
             sentenceHtml: 'Loading...',
             explanationHtml: '',
-            translationHtml: ''
+            translationHtml: '',
+            playing: false
         },
         methods: {
             reset() {
@@ -256,6 +258,7 @@
                             }
                             setTimeout(() => card.next(), 2000);
                         } else {
+                            this.word = response.word;
                             this.sentence = response.sentence;
                             this.sentenceHtml = response.sentenceHtml;
                             this.explanationHtml = response.explanationHtml;
@@ -270,6 +273,15 @@
                         /* responsiveVoice.setDefaultRate(0.5); setDefaultVoice */
                     })
                     .catch((error => console.error(error)));
+            },
+            speak() {
+                if (this.playing) {
+                    this.playing = false;
+                    responsiveVoice.cancel();
+                } else {
+                    this.playing = true;
+                    responsiveVoice.speak(this.sentence, 'UK English Male', {rate: 0.8, volume: 1, onend: () => this.playing = false});
+                }
             }
         },
         mounted() {
