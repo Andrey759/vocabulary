@@ -30,7 +30,7 @@ public class WordService {
     @Transactional
     public void updateAllEmptyFromChatGpt() {
         wordRepository.findAllBySentenceIsNull()
-                .forEach(chatGptService::sendRequest);
+                .forEach(chatGptService::sendAndParseCard);
     }
 
     @Transactional
@@ -61,7 +61,7 @@ public class WordService {
     @Transactional
     public CardDto another(String word) {
         return wordRepository.findByUsernameAndWord(User.getCurrent(), word)
-                .map(chatGptService::sendRequest)
+                .map(chatGptService::sendAndParseCard)
                 .map(wordRepository::save)
                 .map(CardDto::from)
                 .orElse(EMPTY);

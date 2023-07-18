@@ -14,7 +14,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @Builder
 public class User {
     @Id
-    //private Long id;
     private String username;
     private String password;
     private Boolean enabled;

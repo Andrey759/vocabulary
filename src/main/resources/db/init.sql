@@ -16,3 +16,12 @@ CREATE TABLE card (
     status VARCHAR(50),
     ready_at TIMESTAMP(6)
 )
+
+CREATE TABLE message (
+    id BIGINT PRIMARY KEY,
+    username VARCHAR(50),
+    owner VARCHAR(50),
+    corrected VARCHAR(1000),
+    corrected_html VARCHAR(1000),
+    perfect VARCHAR(1000)
+)
