@@ -5,12 +5,12 @@ import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.service.OpenAiService;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.util.StringUtils;
 import vocabulary.controller.dto.CardDto;
-import vocabulary.controller.dto.MessageDto;
 import vocabulary.entity.Card;
 import vocabulary.entity.Message;
 
@@ -24,8 +24,11 @@ import static vocabulary.controller.enums.MessageOwner.BOT;
 import static vocabulary.controller.enums.MessageOwner.USER;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class ChatGptService {
+    private final DiffService restService;
+    private OpenAiService service;
     @Value("${gpt.token}")
     private String gptToken;
     @Value("${gpt.model}")
@@ -34,7 +37,6 @@ public class ChatGptService {
     private String gptMessageCard;
     @Value("${gpt.message.chat}")
     private String gptMessageChat;
-    private OpenAiService service;
 
     @PostConstruct
     public void postConstruct() {
@@ -80,20 +82,28 @@ public class ChatGptService {
 
         List<String> lines = receiveLines(username, String.format(gptMessageChat, source));
 
+        Integer mark = Integer.valueOf(lines.get(0).split("/")[0].replaceAll("//D", ""));
+        String answer = lines.get(1);
+        String corrected = lines.get(2);
+        String perfect = lines.get(3);
+        String correctedHtml = restService.calculateCorrectedHtml(source, corrected);
+
         Message userMessageDto = new Message(
                 LocalDateTime.now().getLong(MILLI_OF_DAY),
                 username,
                 USER,
-                lines.get(1),
-                lines.get(1),
-                lines.get(2)
+                mark,
+                corrected,
+                correctedHtml,
+                perfect
         );
         Message botMessageDto = new Message(
-                LocalDateTime.now().getLong(MILLI_OF_DAY),
+                LocalDateTime.now().getLong(MILLI_OF_DAY) + 1,
                 username,
                 BOT,
+                mark,
                 "",
-                lines.get(0),
+                answer,
                 ""
         );
         log.info("Message: {} Parsed result: {} {}", source, userMessageDto, botMessageDto);
@@ -103,7 +113,14 @@ public class ChatGptService {
 
     private List<String> receiveLines(String username, String message) {
         return Arrays.stream(receive(username, message).split("\n"))
-                .map(str -> str.startsWith("\\d") ? str.substring(4) : str)
+                .map(str -> str.matches("^[0-9] -.+") ? str.substring(4) : str)
+                .map(str -> str.matches("^[0-9]-.+") ? str.substring(4) : str)
+                .map(str -> str.contains(":")
+                        ? str.substring(str.indexOf(":"))
+                        .replaceAll("\"", "")
+                        .replaceAll("'", "")
+                        : str)
+                .map(String::trim)
                 .toList();
     }
     private String receive(String username, String message) {
@@ -114,7 +131,7 @@ public class ChatGptService {
                 .n(1)
                 .build();
 
-        return service.createChatCompletion(completionRequest)
+        String response = service.createChatCompletion(completionRequest)
                 .getChoices()
                 .stream()
                 .findFirst()
@@ -122,5 +139,8 @@ public class ChatGptService {
                 .map(ChatMessage::getContent)
                 .orElse(null)
                 .replaceAll("\n\n", "\n");
+
+        log.info("ChatGPT response: {}", response);
+        return response;
     }
 }

@@ -8,7 +8,6 @@ import java.util.function.Function;
 
 @RequiredArgsConstructor
 public enum CardStatus {
-    AWAITING_CHAT_GPT(dt -> dt),
     LEARNING(dt -> dt.plusHours(6L)),
     THREE_DAYS(dt -> dt.plusDays(3L)),
     ONE_WEEK(dt -> dt.plusWeeks(1L)),

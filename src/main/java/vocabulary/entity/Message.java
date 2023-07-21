@@ -20,6 +20,7 @@ public class Message {
     private String username;
     @Enumerated(value = STRING)
     private MessageOwner owner;
+    private Integer mark;
     private String corrected;
     private String correctedHtml;
     private String perfect;
