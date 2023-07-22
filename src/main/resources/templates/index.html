@@ -176,13 +176,13 @@
             <tr v-for="msg in messages">
                 <td class="border-0"
                     :class="{ 'msg-bot': msg.owner == 'BOT', 'msg-user': msg.owner == 'USER' }"
-                    :title="'Mark: ' + msg.mark + ' / 10'"
+                    :title="'Mark: ' + msg.mark + ' / 10&#010;Perfect: ' + msg.perfect"
                     v-html="msg.correctedHtml"
                 ></td>
             </tr>
             <tr>
                 <td class="input-group border-0 mt-4">
-                    <input type="text" class="form-control rounded-left mt-1px" v-model="newMessage"/>
+                    <input type="text" class="form-control rounded-left mt-1px" v-model="newMessage" v-on:keyup.enter="send"/>
                     <button class="btn btn-lg btn-teal rounded-right" v-on:click="send">
                         <i class="bi bi-send text-white"></i>
                     </button>
