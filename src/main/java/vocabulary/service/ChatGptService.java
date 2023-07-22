@@ -82,7 +82,7 @@ public class ChatGptService {
 
         List<String> lines = receiveLines(username, String.format(gptMessageChat, source));
 
-        Integer mark = Integer.valueOf(lines.get(0).split("/")[0].replaceAll("//D", ""));
+        Integer mark = Integer.valueOf(lines.get(0).split("/")[0].replaceAll("\\D+", ""));
         String answer = lines.get(1);
         String corrected = lines.get(2);
         String perfect = lines.get(3);
@@ -140,7 +140,7 @@ public class ChatGptService {
                 .orElse(null)
                 .replaceAll("\n\n", "\n");
 
-        log.info("ChatGPT response: {}", response);
+        log.info("ChatGPT response:\n{}", response);
         return response;
     }
 }

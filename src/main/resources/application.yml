@@ -13,10 +13,18 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
 
 gpt:
+  token:
   model: gpt-3.5-turbo
-  message: |
-    Generate a sentence with the word '%s' that clearly conveys its meaning. Provide the answer in 4 lines:
-    1 - The sentence,
-    2 - The sentence with the word enclosed in the tags <b> and </b>,
-    3 - The explanation of the word's meaning,
-    4 - The Russian translation of the generated sentence with the word enclosed in the tags <b> and </b>
+  message:
+    card: |
+      Generate a sentence with the word '%s' that clearly conveys its meaning. Provide the answer in 4 lines:
+      1 - The sentence,
+      2 - The sentence with the word enclosed in the tags <b> and </b>,
+      3 - The explanation of the word's meaning,
+      4 - The Russian translation of the generated sentence with the word enclosed in the tags <b> and </b>
+    chat: |
+      My message: '%s'. Provide the answer in 3 lines:
+      1 - Estimate the grammar in my message from 0 to 10,
+      2 - The answer to my message, as if we were having a dialog,
+      3 - The correction of my message to make it better (only the sentence after correction without other words),
+      4 - The perfect correction of my message, as a native speaker would say
