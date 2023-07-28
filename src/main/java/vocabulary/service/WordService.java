@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vocabulary.controller.dto.CardDto;
 import vocabulary.controller.enums.AddedOrReset;
-import vocabulary.entity.User;
 import vocabulary.entity.Card;
 import vocabulary.entity.enums.CardStatus;
 import vocabulary.repository.WordRepository;
@@ -34,33 +33,33 @@ public class WordService {
     }
 
     @Transactional
-    public AddedOrReset addOrReset(String word) {
-        Optional<Card> cardOptional = wordRepository.findByUsernameAndWord(User.getCurrent(), word);
+    public AddedOrReset addOrReset(String username, String word) {
+        Optional<Card> cardOptional = wordRepository.findByUsernameAndWord(username, word);
         if (cardOptional.isPresent()) {
             cardOptional.get().setStatus(LEARNING);
             wordRepository.save(cardOptional.get());
             return RESET;
         }
-        wordRepository.save(Card.create(word));
+        wordRepository.save(Card.create(username, word));
         return ADDED;
     }
 
     @Transactional
-    public void delete(String word) {
-        wordRepository.deleteByUsernameAndWord(User.getCurrent(), word);
+    public void delete(String username, String word) {
+        wordRepository.deleteByUsernameAndWord(username, word);
     }
 
     @Transactional
-    public CardDto reset(String word) {
-        wordRepository.findByUsernameAndWord(User.getCurrent(), word)
+    public CardDto reset(String username, String word) {
+        wordRepository.findByUsernameAndWord(username, word)
                 .map(this::fillFieldsForReset)
                 .map(wordRepository::save);
-        return getCardDtoToRepeat();
+        return getCardDtoToRepeat(username);
     }
 
     @Transactional
-    public CardDto another(String word) {
-        return wordRepository.findByUsernameAndWord(User.getCurrent(), word)
+    public CardDto another(String username, String word) {
+        return wordRepository.findByUsernameAndWord(username, word)
                 .map(chatGptService::sendAndParseCard)
                 .map(wordRepository::save)
                 .map(CardDto::from)
@@ -68,21 +67,32 @@ public class WordService {
     }
 
     @Transactional
-    public CardDto next(String word) {
-        wordRepository.findByUsernameAndWord(User.getCurrent(), word)
+    public CardDto next(String username, String word) {
+        wordRepository.findByUsernameAndWord(username, word)
                 .map(this::fillFieldsForNextStatus)
                 .map(wordRepository::save);
-        return getCardDtoToRepeat();
+        return getCardDtoToRepeat(username);
     }
 
     @Transactional(readOnly = true)
-    public List<Card> findAll() {
-        return wordRepository.findAllByUsername(User.getCurrent());
+    public List<Card> findAll(String username) {
+        return wordRepository.findAllByUsername(username);
+    }
+
+    @Transactional
+    public CardDto changeStatusAndGetCardDto(String username, String word, CardStatus status) {
+        wordRepository.findByUsernameAndWord(username, word)
+                .map(card -> {
+                    card.setStatus(status);
+                    return card;
+                })
+                .ifPresent(wordRepository::save);
+        return getCardDtoToRepeat(username);
     }
 
 
-    private CardDto getCardDtoToRepeat() {
-        return wordRepository.findByUsernameAndReadyAtLessThan(User.getCurrent(), LocalDateTime.now())
+    private CardDto getCardDtoToRepeat(String username) {
+        return wordRepository.findByUsernameAndReadyAtLessThan(username, LocalDateTime.now())
                 .map(CardDto::from)
                 .orElse(EMPTY);
     }

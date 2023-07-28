@@ -28,7 +28,7 @@ public class DiffServiceTest {
     @Test
     public void test4() {
         String actual = diffService.calculateCorrectedHtml("They ares doctor", "They are doctors");
-        assertEquals("They are<span class=\"rm\">s doctor</span><span class=\"ins\"> doctors</span>", actual);
+        assertEquals("They <span class=\"rm\">ares doctor</span> <span class=\"ins\">are doctors</span>", actual);
     }
 
     @Test
@@ -41,5 +41,23 @@ public class DiffServiceTest {
     public void test6() {
         String actual = diffService.calculateCorrectedHtml("Can you tell me about geographi?", "Can you tell me about geography?");
         assertEquals("Can you tell me about geograph<span class=\"rm\">i</span><span class=\"ins\">y</span>?", actual);
+    }
+
+    @Test
+    public void test7() {
+        String actual = diffService.calculateCorrectedHtml("Could you please tell me about geography", "Could you please tell me about geography?");
+        assertEquals("Could you please tell me about geography?", actual);
+    }
+
+    @Test
+    public void test8() {
+        String actual = diffService.calculateCorrectedHtml("Could you tell me about geography", "Can you tell me about geography");
+        assertEquals("<span class=\"rm\">Could</span> <span class=\"ins\">Can</span> you tell me about geography", actual);
+    }
+
+    @Test
+    public void test9() {
+        String actual = diffService.calculateCorrectedHtml("Tell me the most popular capitals.", "Tell me which capitals are the most popular.");
+        assertEquals("Tell me <span class=\"ins\">which capitals are</span> the most popular <span class=\"rm\">capitals</span>.", actual);
     }
 }

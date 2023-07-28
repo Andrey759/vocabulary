@@ -3,12 +3,12 @@ package vocabulary.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vocabulary.controller.dto.CardDto;
+import vocabulary.controller.dto.CardStatusDto;
 import vocabulary.controller.enums.AddedOrReset;
 import vocabulary.entity.Card;
+import vocabulary.entity.User;
 import vocabulary.service.WordService;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class WordController {
     @GetMapping("/api/add/{word}")
     public ResponseEntity<String> add(@PathVariable String word) {
         log.info("GET /api/add/{}", word);
-        AddedOrReset result = wordService.addOrReset(word);
+        AddedOrReset result = wordService.addOrReset(User.getCurrent(), word);
         log.info("GET /api/delete/{} Response {}", word, result);
         return ResponseEntity.ok(result == ADDED ? "✔" : "Status updated");
     }
@@ -32,14 +32,14 @@ public class WordController {
     @GetMapping("/api/delete/{word}")
     public ResponseEntity<String> delete(@PathVariable String word) {
         log.info("GET /api/delete/{}", word);
-        wordService.delete(word);
+        wordService.delete(User.getCurrent(), word);
         return ResponseEntity.ok("OK");
     }
 
     @GetMapping("/api/reset/{word}")
     public ResponseEntity<CardDto> reset(@PathVariable String word) {
         log.info("GET /api/reset/{}", word);
-        CardDto cardDto = wordService.reset(word);
+        CardDto cardDto = wordService.reset(User.getCurrent(), word);
         log.info("GET /api/reset/{} Response {}", word, cardDto);
         return ResponseEntity.ok(cardDto);
     }
@@ -47,7 +47,7 @@ public class WordController {
     @GetMapping("/api/another/{word}")
     public ResponseEntity<CardDto> another(@PathVariable String word) {
         log.info("GET /api/another/{}", word);
-        CardDto card = wordService.another(word);
+        CardDto card = wordService.another(User.getCurrent(), word);
         log.info("GET /api/another/{} Response {}", word, card);
         return ResponseEntity.ok(card);
     }
@@ -55,16 +55,24 @@ public class WordController {
     @GetMapping({ "/api/next/", "/api/next/{word}" })
     public ResponseEntity<CardDto> next(@PathVariable(required = false) String word) {
         log.info("GET /api/next/{}", word);
-        CardDto card = wordService.next(word);
+        CardDto card = wordService.next(User.getCurrent(), word);
         log.info("GET /api/next/{} Response {}", word, card);
         return ResponseEntity.ok(card);
     }
 
-    @GetMapping("/api/get")
-    public ResponseEntity<List<Card>> get() {
-        log.info("GET /api/get");
-        List<Card> cards = wordService.findAll();
-        log.info("GET /api/get Response {}", cards);
+    @GetMapping("/api/dict")
+    public ResponseEntity<List<Card>> getDict() {
+        log.info("GET /api/dict");
+        List<Card> cards = wordService.findAll(User.getCurrent());
+        log.info("GET /api/dict Response {}", cards);
         return ResponseEntity.ok(cards);
+    }
+
+    @PostMapping("/api/dict")
+    public ResponseEntity<CardDto> postDict(@RequestBody CardStatusDto cardStatus) {
+        log.info("POST /api/dict");
+        CardDto card = wordService.changeStatusAndGetCardDto(User.getCurrent(), cardStatus.getWord(), cardStatus.getStatus());
+        log.info("POST /api/dict Response {}", card);
+        return ResponseEntity.ok(card);
     }
 }

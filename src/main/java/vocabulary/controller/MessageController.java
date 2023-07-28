@@ -3,9 +3,7 @@ package vocabulary.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vocabulary.entity.Message;
 import vocabulary.entity.User;
 import vocabulary.service.MessageService;
@@ -18,11 +16,19 @@ import java.util.List;
 public class MessageController {
     private final MessageService messageService;
 
-    @GetMapping({ "/api/chat/", "/api/chat/{newMessage}" })
-    public ResponseEntity<List<Message>> chat(@PathVariable(required = false) String newMessage) {
-        log.info("GET /api/chat/{}", newMessage);
+    @GetMapping("/api/chat")
+    public ResponseEntity<List<Message>> getChat() {
+        log.info("GET /api/chat");
+        List<Message> messages = messageService.getAll(User.getCurrent());
+        log.info("GET /api/chat Response: {}", messages);
+        return ResponseEntity.ok(messages);
+    }
+
+    @PostMapping("/api/chat")
+    public ResponseEntity<List<Message>> postChat(@RequestBody String newMessage) {
+        log.info("POST /api/chat Body: {}", newMessage);
         List<Message> messages = messageService.saveAndGetAll(User.getCurrent(), newMessage);
-        log.info("GET /api/next/{} Response {}", newMessage, messages);
+        log.info("POST /api/chat Body: {} Response: {}", newMessage, messages);
         return ResponseEntity.ok(messages);
     }
 }

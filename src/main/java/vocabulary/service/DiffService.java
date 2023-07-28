@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static io.micrometer.common.util.StringUtils.isEmpty;
 import static io.micrometer.common.util.StringUtils.isNotEmpty;
+import static java.util.Arrays.asList;
 import static vocabulary.service.enums.ChunkType.equal;
 
 @Service
@@ -84,10 +85,16 @@ public class DiffService {
         String commonEnding = rm.substring(rm.length() - commonCharsInTheEnding);
         String rmPart = rm.substring(commonCharsInTheBeginning, rm.length() - commonCharsInTheEnding);
         String insPart = ins.substring(commonCharsInTheBeginning, ins.length() - commonCharsInTheEnding);
+
+        if ((commonCharsInTheBeginning + commonCharsInTheEnding) * 2 <= rmPart.length() + insPart.length()) {
+            return (isNotEmpty(rm) ? (rm.startsWith(" ") ? " " + FORMAT_RM.apply(rm.trim()) : FORMAT_RM.apply(rm)) : "")
+                    + (isNotEmpty(rm) && isNotEmpty(ins) ? " " : "")
+                    + (isNotEmpty(ins) ? (asList(".", "?", "!").contains(ins) ? ins : FORMAT_INS.apply(ins)) : "");
+        }
         return commonBeginning
-                + (isNotEmpty(rmPart) ? FORMAT_RM.apply(rmPart) : "")
+                + (isNotEmpty(rmPart) ? (rmPart.startsWith(" ") ? " " + FORMAT_RM.apply(rmPart.trim()) : FORMAT_RM.apply(rmPart)) : "")
                 + (isNotEmpty(rmPart) && isNotEmpty(insPart) && commonCharsInTheBeginning == 0 && commonCharsInTheEnding == 0 ? " " : "")
-                + (isNotEmpty(insPart) ? FORMAT_INS.apply(insPart) : "")
+                + (isNotEmpty(insPart) ? (asList(".", "?", "!").contains(insPart) ? insPart : FORMAT_INS.apply(insPart)) : "")
                 + commonEnding;
     }
 

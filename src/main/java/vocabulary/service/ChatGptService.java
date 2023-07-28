@@ -62,12 +62,20 @@ public class ChatGptService {
 
         List<String> lines = receiveLines(username + "-cards", String.format(gptMessageCard, word));
 
+        String sentence = lines.get(0);
+        String sentenceHtml = lines.get(1);
+        String explanationHtml = lines.get(2);
+        String translationHtml = lines.get(3);
+        if (explanationHtml.contains("means")) {
+            explanationHtml = explanationHtml.split("means")[1].trim();
+        }
+
         CardDto cardDto = new CardDto(
                 word,
-                lines.get(0),
-                lines.get(1),
-                lines.get(2),
-                lines.get(3)
+                sentence,
+                sentenceHtml,
+                explanationHtml,
+                translationHtml
         );
         log.info("Word: {} Parsed result: {}", word, cardDto);
 
@@ -83,6 +91,9 @@ public class ChatGptService {
         List<String> lines = receiveLines(username, String.format(gptMessageChat, source));
 
         Integer mark = Integer.valueOf(lines.get(0).split("/")[0].replaceAll("\\D+", ""));
+        if (mark > 10) {
+            mark = mark / 100;
+        }
         String answer = lines.get(1);
         String corrected = lines.get(2);
         String perfect = lines.get(3);
@@ -101,8 +112,8 @@ public class ChatGptService {
                 LocalDateTime.now().getLong(MILLI_OF_DAY) + 1,
                 username,
                 BOT,
-                mark,
-                "",
+                null,
+                answer,
                 answer,
                 ""
         );
@@ -115,11 +126,9 @@ public class ChatGptService {
         return Arrays.stream(receive(username, message).split("\n"))
                 .map(str -> str.matches("^[0-9] -.+") ? str.substring(4) : str)
                 .map(str -> str.matches("^[0-9]-.+") ? str.substring(4) : str)
-                .map(str -> str.contains(":")
-                        ? str.substring(str.indexOf(":"))
-                        .replaceAll("\"", "")
-                        .replaceAll("'", "")
-                        : str)
+                .map(str -> str.contains(":") ? str.substring(str.indexOf(":")) : str)
+                .map(str -> str.replaceAll("\"", ""))
+                .map(str -> str.replaceAll("'", ""))
                 .map(String::trim)
                 .toList();
     }

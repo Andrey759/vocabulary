@@ -24,7 +24,7 @@ gpt:
       4 - The Russian translation of the generated sentence with the word enclosed in the tags <b> and </b>
     chat: |
       My message: '%s'. Provide the answer in 3 lines:
-      1 - Estimate the grammar in my message from 0 to 10,
+      1 - Estimate the grammar in my message from 1 to 10 (where 1 - the is no sense in the sentence, 5 - you can understand it, but the grammar is poor, 10 - the grammar is perfect),
       2 - The answer to my message, as if we were having a dialog,
       3 - The correction of my message to make it better (only the sentence after correction without other words),
       4 - The perfect correction of my message, as a native speaker would say

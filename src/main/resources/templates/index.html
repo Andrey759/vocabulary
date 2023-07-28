@@ -17,6 +17,15 @@
         .float-right {
             float: right;
         }
+        .dimgray {
+            color: dimgray;
+        }
+        .disable-select {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
         .card {
             border:none;
             text-align: center;
@@ -32,8 +41,31 @@
             padding: 0.75em 0.5em;
             border-radius: 0;
         }
+        .card-body {
+            height: 200px;
+        }
         .card-text {
             height: 48px;
+        }
+        .card-left {
+            left: 2px;
+        }
+        .card-right {
+            right: 2px;
+        }
+        .card-left,.card-right {
+            padding: 5px;
+            border-radius: 1rem;
+            border: 2px dashed darkgray;
+            width: calc(50% - 3px);
+            background-color: gainsboro;
+            height: 112px;
+            position: absolute;
+            bottom: 52px;
+            display: flex;
+        }
+        .card-left p,.card-right p {
+            margin: auto;
         }
         .btn-teal {
             background-color: teal !important;
@@ -160,8 +192,12 @@
                 <!--<h5 class="card-title fw-bold">Card title</h5>-->
                 <i class="btn btn-lg bi bi-play-circle" style="display: inline" :class="{ 'bi-stop-circle': playing }" v-on:click="speak"></i>
                 <p class="card-text" style="display: inline" v-html="sentenceHtml"></p>
-                <p class="card-text" v-html="explanationHtml"></p>
-                <p class="card-text" v-html="translationHtml"></p>
+                <div class="card-left disable-select" v-on:click="explanationClick" :class="{ 'dimgray': !explanationVisible }">
+                    <p v-html="explanationVisible ? explanationHtml : 'Explanation</br>Click to see'"></p>
+                </div>
+                <div class="card-right disable-select" v-on:click="translationClick" :class="{ 'dimgray': !translationVisible }">
+                    <p v-html="translationVisible ? translationHtml : 'Translation</br>Click to see'"></p>
+                </div>
                 <p></p>
             </div>
             <div class="btn-group">
@@ -176,14 +212,14 @@
             <tr v-for="msg in messages">
                 <td class="border-0"
                     :class="{ 'msg-bot': msg.owner == 'BOT', 'msg-user': msg.owner == 'USER' }"
-                    :title="'Mark: ' + msg.mark + ' / 10&#010;Perfect: ' + msg.perfect"
+                    :title="msg.owner == 'USER' ? 'Mark: ' + msg.mark + ' / 10 Perfect: ' + msg.perfect : null"
                     v-html="msg.correctedHtml"
                 ></td>
             </tr>
             <tr>
                 <td class="input-group border-0 mt-4">
-                    <input type="text" class="form-control rounded-left mt-1px" v-model="newMessage" v-on:keyup.enter="send"/>
-                    <button class="btn btn-lg btn-teal rounded-right" v-on:click="send">
+                    <input type="text" class="form-control rounded-left mt-1px" v-model="newMessage" :disabled="disabled" v-on:keyup.enter="send"/>
+                    <button class="btn btn-lg btn-teal rounded-right" :disabled="disabled" v-on:click="send">
                         <i class="bi bi-send text-white"></i>
                     </button>
                 </td>
@@ -193,9 +229,9 @@
     <div class="tab-pane fade" id="nav-dict" role="tabpanel" aria-labelledby="nav-dict-tab">
         <table class="table table-dark m-auto" id="dict" style="width: 36rem">
             <tr v-for="card in cards" :key="card.text">
-                <td>{{ card.text }}</td>
+                <td>{{ card.word }}</td>
                 <td class="w-25">
-                    <select class="form-select form-select-sm bg-secondary border-secondary text-white" data-style="btn-secondary" v-model="card.status">
+                    <select class="form-select form-select-sm bg-secondary border-secondary text-white" data-style="btn-secondary" v-model="card.status" @change="change(card.word, card.status)">
                         <option value="LEARNING">LEARNING</option>
                         <option value="THREE_DAYS">THREE_DAYS</option>
                         <option value="ONE_WEEK">ONE_WEEK</option>
@@ -245,9 +281,17 @@
             sentenceHtml: 'Loading...',
             explanationHtml: '',
             translationHtml: '',
+            explanationVisible: false,
+            translationVisible: false,
             playing: false
         },
         methods: {
+            explanationClick() {
+                this.explanationVisible = !this.explanationVisible;
+            },
+            translationClick() {
+                this.translationVisible = !this.translationVisible;
+            },
             reset() {
                 this.sentence = '';
                 this.sentenceHtml = '';
@@ -288,28 +332,29 @@
                 //this.translationHtml = '';
                 fetch('http://localhost:8080/api/next/' + this.word)
                     .then(response => response.json())
-                    .then(response => {
-                        if (response.sentence === '') {
-                            if (card.sentenceHtml !== 'No cards to repeat') {
-                                this.sentenceHtml = 'No cards to repeat';
-                            }
-                            setTimeout(() => card.next(), 2000);
-                        } else {
-                            this.word = response.word;
-                            this.sentence = response.sentence;
-                            this.sentenceHtml = response.sentenceHtml;
-                            this.explanationHtml = response.explanationHtml;
-                            this.translationHtml = response.translationHtml;
-                        }
-                            /*responsiveVoice.allowSpeechClicked(true);*/
-/*
-                        responsiveVoice.speak(response, 'UK English Male', {rate: 0.8, volume: 1, onend: function () {
-                                responsiveVoice.cancel();
-                                responsiveVoice.speak(response, 'UK English Male', {rate: 0.8, volume: 1});
-                            }});*/
-                        /* responsiveVoice.setDefaultRate(0.5); setDefaultVoice */
-                    })
+                    .then(this.handleResponse)
                     .catch(handleError);
+            },
+            handleResponse(response) {
+                if (response.sentence === '') {
+                    if (card.sentenceHtml !== 'No cards to repeat') {
+                        this.sentenceHtml = 'No cards to repeat';
+                    }
+                    setTimeout(() => card.next(), 2000);
+                } else {
+                    this.word = response.word;
+                    this.sentence = response.sentence;
+                    this.sentenceHtml = response.sentenceHtml;
+                    this.explanationHtml = response.explanationHtml;
+                    this.translationHtml = response.translationHtml;
+                }
+                /*responsiveVoice.allowSpeechClicked(true);*/
+                /*
+                                        responsiveVoice.speak(response, 'UK English Male', {rate: 0.8, volume: 1, onend: function () {
+                                                responsiveVoice.cancel();
+                                                responsiveVoice.speak(response, 'UK English Male', {rate: 0.8, volume: 1});
+                                            }});*/
+                /* responsiveVoice.setDefaultRate(0.5); setDefaultVoice */
             },
             speak() {
                 if (this.playing) {
@@ -322,6 +367,9 @@
             }
         },
         mounted() {
+            $('.card-left, .card-right').on('click', function() {
+                $(this).css('user-select', 'none');
+            });
             responsiveVoice.cancel();
             //responsiveVoice.speak('');
             //setTimeout(() => { responsiveVoice.allowSpeechClicked(true); }, 300);
@@ -337,12 +385,22 @@
         },
         methods: {
             update() {
-                fetch('http://localhost:8080/api/get')
+                fetch('http://localhost:8080/api/dict')
                     .then(response => response.json())
                     .then(response => {
                         console.log(response);
                         this.cards = response;
                     })
+                    .catch(handleError);
+            },
+            change(word, status) {
+                fetch('http://localhost:8080/api/dict', {
+                    method: 'POST',
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ word: word, status: status })
+                })
+                    .then(response => response.json())
+                    .then(card.handleResponse)
                     .catch(handleError);
             }
         },
@@ -350,39 +408,62 @@
             this.update();
         }
     })
-    var aaa;
 
     var chat = new Vue({
         el: '#chat',
         data: {
+            disabled: false,
             messages: [],
             newMessage: ''
         },
         methods: {
+            init() {
+                this.disabled = true;
+
+                fetch('http://localhost:8080/api/chat')
+                    .then(response => response.json())
+                    .then(response => {
+                        console.log(response);
+                        this.disabled = false;
+                        this.messages = response;
+                    })
+                    .catch(handleError);
+            },
             send() {
+                if (this.newMessage === undefined || this.newMessage === '' || /^\s+$/.test(this.newMessage)) {
+                    console.log("newMessage is empty");
+                    return;
+                }
+                this.disabled = true;
                 var newMessage = this.newMessage;
                 this.newMessage = '';
                 this.messages.push({owner: "USER", correctedHtml: newMessage});
                 this.messages.push({owner: "BOT", correctedHtml: 'Loading.....'});
 
-                fetch('http://localhost:8080/api/chat/' + newMessage)
+                fetch('http://localhost:8080/api/chat', {method: 'POST', body: newMessage})
                     .then(response => response.json())
                     .then(response => {
-                        console.log(response);
                         this.messages = response;
-                        responsiveVoice.speak(this.messages[this.messages.length - 1], 'UK English Male', {rate: 0.8, volume: 1});
+                        speak(this.messages[this.messages.length - 1].corrected);
                     })
-                    .catch(handleError);
+                    .catch(handleError)
+                    .finally(() => this.disabled = false);
             }
         },
         mounted() {
-            this.send();
+            this.init();
         }
     })
 
-    var handleError = (error) => {
-        console.log(error);
-        setTimeout(() => { window.location.href = "/"; }, 1000);
+    var handleError = (response) => {
+        if (('' + response).indexOf('SyntaxError') >= 0 || ('' + response).indexOf('TypeError') >= 0) {
+            window.location.href = "/";
+        } else {
+            console.log(response);
+        }
+    }
+    var speak = (text) => {
+        responsiveVoice.speak(text, 'UK English Male', {rate: 0.8, volume: 1});
     }
 
 </script>

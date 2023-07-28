@@ -33,10 +33,10 @@ public class Card {
     private CardStatus status;
     private LocalDateTime readyAt;
 
-    public static Card create(String word) {
+    public static Card create(String username, String word) {
         return Card.builder()
                 .id(LocalDateTime.now().getLong(MILLI_OF_DAY))
-                .username(User.getCurrent())
+                .username(username)
                 .word(word)
                 .status(LEARNING)
                 .readyAt(LocalDateTime.now())
