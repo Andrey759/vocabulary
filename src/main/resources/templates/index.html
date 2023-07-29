@@ -20,6 +20,9 @@
         .dimgray {
             color: dimgray;
         }
+        .w165 {
+            width: 165px !important;
+        }
         .disable-select {
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -247,13 +250,69 @@
         </table>
     </div>
     <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
-
+        <table class="table table-dark m-auto" id="settings" style="width: 36rem">
+            <tr>
+                <td>Voice enabled</td>
+                <td class="w-25">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" v-model="voiceEnabled" @change="saveVoiceEnabled()" :class="{ 'btn-teal-dark': voiceEnabled }">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>Voice for repeating words</td>
+                <td class="w-25">
+                    <select class="form-select form-select-sm bg-secondary border-secondary text-white w165" data-style="btn-secondary" v-model="voiceCard" @change="saveVoiceCard()">
+                        <option value="UK_ENGLISH_FEMALE">UK English Female</option>
+                        <option value="UK_ENGLISH_MALE">UK English Male</option>
+                        <option value="US_ENGLISH_FEMALE">US English Female</option>
+                        <option value="US_ENGLISH_MALE">US English Male</option>
+                        <option value="RANDOM">Random</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Voice for ChatGpt messages</td>
+                <td class="w-25">
+                    <select class="form-select form-select-sm bg-secondary border-secondary text-white w165" data-style="btn-secondary" v-model="voiceChatLeft" @change="saveVoiceChatLeft()">
+                        <option value="UK_ENGLISH_FEMALE">UK English Female</option>
+                        <option value="UK_ENGLISH_MALE">UK English Male</option>
+                        <option value="US_ENGLISH_FEMALE">US English Female</option>
+                        <option value="US_ENGLISH_MALE">US English Male</option>
+                        <option value="RANDOM">Random</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Voice for your messages</td>
+                <td class="w-25">
+                    <select class="form-select form-select-sm bg-secondary border-secondary text-white w165" data-style="btn-secondary" v-model="voiceChatRight" @change="saveVoiceChatRight()">
+                        <option value="UK_ENGLISH_FEMALE">UK English Female</option>
+                        <option value="UK_ENGLISH_MALE">UK English Male</option>
+                        <option value="US_ENGLISH_FEMALE">US English Female</option>
+                        <option value="US_ENGLISH_MALE">US English Male</option>
+                        <option value="RANDOM">Random</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Voice rate</td>
+                <td class="w-25">
+                    <input class="form-control form-select-sm bg-secondary border-secondary text-white w165" v-model="voiceRate" @change="saveVoiceRate()">
+                </td>
+            </tr>
+            <tr>
+                <td>Voice volume</td>
+                <td class="w-25">
+                    <input class="form-control form-select-sm bg-secondary border-secondary text-white w165" v-model="voiceVolume" @change="saveVoiceVolume()">
+                </td>
+            </tr>
+        </table>
     </div>
 </div>
 
 
 <script>
-    var resp;
     var newWord = new Vue({
         el: '#new-word',
         data: {
@@ -263,6 +322,7 @@
         methods: {
             add() {
                 fetch('http://localhost:8080/api/add/' + this.word)
+                    .then(response => log(response))
                     .then(response => response.text())
                     .then(response => {
                         this.result = response;
@@ -271,7 +331,7 @@
                     .catch(handleError);
             }
         },
-    })
+    });
 
     var card = new Vue({
         el: '#card',
@@ -298,6 +358,7 @@
                 this.explanationHtml = '';
                 this.translationHtml = '';
                 fetch('http://localhost:8080/api/reset/' + this.word)
+                    .then(response => log(response))
                     .then(response => response.json())
                     .then(response => {
                         this.word = response.word;
@@ -331,6 +392,7 @@
                 //this.explanationHtml = '';
                 //this.translationHtml = '';
                 fetch('http://localhost:8080/api/next/' + this.word)
+                    .then(response => log(response))
                     .then(response => response.json())
                     .then(this.handleResponse)
                     .catch(handleError);
@@ -376,38 +438,7 @@
             //setTimeout(() => { responsiveVoice.allowSpeechClicked(true); }, 1000);
             this.next();
         }
-    })
-
-    var dict = new Vue({
-        el: '#dict',
-        data: {
-            cards: []
-        },
-        methods: {
-            update() {
-                fetch('http://localhost:8080/api/dict')
-                    .then(response => response.json())
-                    .then(response => {
-                        console.log(response);
-                        this.cards = response;
-                    })
-                    .catch(handleError);
-            },
-            change(word, status) {
-                fetch('http://localhost:8080/api/dict', {
-                    method: 'POST',
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ word: word, status: status })
-                })
-                    .then(response => response.json())
-                    .then(card.handleResponse)
-                    .catch(handleError);
-            }
-        },
-        mounted() {
-            this.update();
-        }
-    })
+    });
 
     var chat = new Vue({
         el: '#chat',
@@ -421,9 +452,9 @@
                 this.disabled = true;
 
                 fetch('http://localhost:8080/api/chat')
+                    .then(response => log(response))
                     .then(response => response.json())
                     .then(response => {
-                        console.log(response);
                         this.disabled = false;
                         this.messages = response;
                     })
@@ -441,6 +472,7 @@
                 this.messages.push({owner: "BOT", correctedHtml: 'Loading.....'});
 
                 fetch('http://localhost:8080/api/chat', {method: 'POST', body: newMessage})
+                    .then(response => log(response))
                     .then(response => response.json())
                     .then(response => {
                         this.messages = response;
@@ -453,8 +485,123 @@
         mounted() {
             this.init();
         }
-    })
+    });
 
+    var dict = new Vue({
+        el: '#dict',
+        data: {
+            cards: []
+        },
+        methods: {
+            update() {
+                fetch('http://localhost:8080/api/dict')
+                    .then(response => log(response))
+                    .then(response => response.json())
+                    .then(response => {
+                        this.cards = response;
+                    })
+                    .catch(handleError);
+            },
+            change(word, status) {
+                fetch('http://localhost:8080/api/dict', {
+                    method: 'POST',
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ word: word, status: status })
+                })
+                    .then(response => log(response))
+                    .then(response => response.json())
+                    .then(card.handleResponse)
+                    .catch(handleError);
+            }
+        },
+        mounted() {
+            this.update();
+        }
+    });
+
+    var settings = new Vue({
+        el: '#settings',
+        data: {
+            voiceEnabled: true,
+            voiceCard: '',
+            voiceChatLeft: '',
+            voiceChatRight: '',
+            voiceRate: 0.0,
+            voiceVolume: 0.0
+        },
+        methods: {
+            load() {
+                fetch('http://localhost:8080/api/user')
+                    .then(response => log(response))
+                    .then(response => response.json())
+                    .then(response => {
+                        this.voiceEnabled = response.voiceEnabled;
+                        this.voiceCard = response.voiceCard;
+                        this.voiceChatLeft = response.voiceChatLeft;
+                        this.voiceChatRight = response.voiceChatRight;
+                        this.voiceRate = response.voiceRate;
+                        this.voiceVolume = response.voiceVolume;
+                    })
+                    .catch(handleError);
+            },
+            saveVoiceEnabled() {
+                fetch('http://localhost:8080/api/user/voice/enabled', {
+                    method: 'POST',
+                    body: this.voiceEnabled
+                })
+                    .then(response => log(response))
+                    .catch(handleError);
+            },
+            saveVoiceCard() {
+                fetch('http://localhost:8080/api/user/voice/card', {
+                    method: 'POST',
+                    body: this.voiceCard
+                })
+                    .then(response => log(response))
+                    .catch(handleError);
+            },
+            saveVoiceChatLeft() {
+                fetch('http://localhost:8080/api/user/voice/chat/left', {
+                    method: 'POST',
+                    body: this.voiceChatLeft
+                })
+                    .then(response => log(response))
+                    .catch(handleError);
+            },
+            saveVoiceChatRight() {
+                fetch('http://localhost:8080/api/user/voice/chat/right', {
+                    method: 'POST',
+                    body: this.voiceChatRight
+                })
+                    .then(response => log(response))
+                    .catch(handleError);
+            },
+            saveVoiceRate() {
+                fetch('http://localhost:8080/api/user/voice/rate', {
+                    method: 'POST',
+                    body: this.voiceRate
+                })
+                    .then(response => log(response))
+                    .catch(handleError);
+            },
+            saveVoiceVolume() {
+                fetch('http://localhost:8080/api/user/voice/volume', {
+                    method: 'POST',
+                    body: this.voiceVolume
+                })
+                    .then(response => log(response))
+                    .catch(handleError);
+            }
+        },
+        mounted() {
+            this.load();
+        }
+    });
+
+    var log = (response) => {
+        console.log(response);
+        return response;
+    }
     var handleError = (response) => {
         if (('' + response).indexOf('SyntaxError') >= 0 || ('' + response).indexOf('TypeError') >= 0) {
             window.location.href = "/";

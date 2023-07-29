@@ -9,6 +9,6 @@ import vocabulary.entity.enums.CardStatus;
 @RequiredArgsConstructor
 @ToString
 public class CardStatusDto {
-    private String word;
-    private CardStatus status;
+    private final String word;
+    private final CardStatus status;
 }

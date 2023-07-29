@@ -26,9 +26,9 @@ public class MessageController {
 
     @PostMapping("/api/chat")
     public ResponseEntity<List<Message>> postChat(@RequestBody String newMessage) {
-        log.info("POST /api/chat Body: {}", newMessage);
+        log.info("POST /api/chat {}", newMessage);
         List<Message> messages = messageService.saveAndGetAll(User.getCurrent(), newMessage);
-        log.info("POST /api/chat Body: {} Response: {}", newMessage, messages);
+        log.info("POST /api/chat {} Response: {}", newMessage, messages);
         return ResponseEntity.ok(messages);
     }
 }

@@ -25,7 +25,7 @@ public class WordController {
     public ResponseEntity<String> add(@PathVariable String word) {
         log.info("GET /api/add/{}", word);
         AddedOrReset result = wordService.addOrReset(User.getCurrent(), word);
-        log.info("GET /api/delete/{} Response {}", word, result);
+        log.info("GET /api/delete/{} Response: {}", word, result);
         return ResponseEntity.ok(result == ADDED ? "✔" : "Status updated");
     }
 
@@ -40,7 +40,7 @@ public class WordController {
     public ResponseEntity<CardDto> reset(@PathVariable String word) {
         log.info("GET /api/reset/{}", word);
         CardDto cardDto = wordService.reset(User.getCurrent(), word);
-        log.info("GET /api/reset/{} Response {}", word, cardDto);
+        log.info("GET /api/reset/{} Response: {}", word, cardDto);
         return ResponseEntity.ok(cardDto);
     }
 
@@ -48,7 +48,7 @@ public class WordController {
     public ResponseEntity<CardDto> another(@PathVariable String word) {
         log.info("GET /api/another/{}", word);
         CardDto card = wordService.another(User.getCurrent(), word);
-        log.info("GET /api/another/{} Response {}", word, card);
+        log.info("GET /api/another/{} Response: {}", word, card);
         return ResponseEntity.ok(card);
     }
 
@@ -56,7 +56,7 @@ public class WordController {
     public ResponseEntity<CardDto> next(@PathVariable(required = false) String word) {
         log.info("GET /api/next/{}", word);
         CardDto card = wordService.next(User.getCurrent(), word);
-        log.info("GET /api/next/{} Response {}", word, card);
+        log.info("GET /api/next/{} Response: {}", word, card);
         return ResponseEntity.ok(card);
     }
 
@@ -64,7 +64,7 @@ public class WordController {
     public ResponseEntity<List<Card>> getDict() {
         log.info("GET /api/dict");
         List<Card> cards = wordService.findAll(User.getCurrent());
-        log.info("GET /api/dict Response {}", cards);
+        log.info("GET /api/dict Response: {}", cards);
         return ResponseEntity.ok(cards);
     }
 
@@ -72,7 +72,7 @@ public class WordController {
     public ResponseEntity<CardDto> postDict(@RequestBody CardStatusDto cardStatus) {
         log.info("POST /api/dict");
         CardDto card = wordService.changeStatusAndGetCardDto(User.getCurrent(), cardStatus.getWord(), cardStatus.getStatus());
-        log.info("POST /api/dict Response {}", card);
+        log.info("POST /api/dict Response: {}", card);
         return ResponseEntity.ok(card);
     }
 }

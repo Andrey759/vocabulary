@@ -2,7 +2,13 @@
 CREATE TABLE user (
     username VARCHAR(50) PRIMARY KEY,
     password VARCHAR(50),
-    enabled BOOLEAN
+    enabled BOOLEAN,
+    voice_enabled BOOLEAN,
+    voice_card VARCHAR(50),
+    voice_chat_left VARCHAR(50),
+    voice_chat_right VARCHAR(50),
+    voice_rate NUMERIC,
+    voice_volume NUMERIC
 );
 
 CREATE TABLE card (
@@ -15,7 +21,7 @@ CREATE TABLE card (
     explanation_html VARCHAR(1000),
     status VARCHAR(50),
     ready_at TIMESTAMP(6)
-)
+);
 
 CREATE TABLE message (
     id BIGINT PRIMARY KEY,
@@ -25,4 +31,4 @@ CREATE TABLE message (
     corrected VARCHAR(1000),
     corrected_html VARCHAR(1000),
     perfect VARCHAR(1000)
-)
+);
