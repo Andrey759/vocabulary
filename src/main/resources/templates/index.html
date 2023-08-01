@@ -82,6 +82,10 @@
             background-color: #175873 !important;
             border-color: #175873 !important;
         }
+        .btn-rd {
+            background-color: #A63F52 !important;
+            border-color: #A63F52 !important;
+        }
         .btn-teal:hover {
             filter: brightness(95%);
         }
@@ -90,6 +94,16 @@
         }
         .btn-teal-dark:hover {
             filter: brightness(95%);
+        }
+        .btn-teal-rd:hover {
+            filter: brightness(95%);
+        }
+        .form-control::placeholder {
+            color: lightgray;
+        }
+        .position-right {
+            position: absolute;
+            margin-left: 10px;
         }
         .nav .btn:not(.active) {
             filter: brightness(55%);
@@ -142,7 +156,7 @@
     <div class="col input-group">
         <input type="text" class="form-control rounded-left mt-1px" placeholder="Add new word..." v-model="word"/>
         <button class="btn btn-lg btn-success rounded-right" v-on:click="add">
-            <i class="bi bi-save text-white"></i>
+            <i class="bi bi-pencil text-white"></i>
         </button>
         {{ result }}
     </div>
@@ -181,11 +195,8 @@
     </div>
 </div>
 
-<br/>
-<br/>
-
 <div class="tab-content" id="nav-tabContent" style="margin-bottom: 10%">
-    <div class="tab-pane fade show active" id="nav-repeat" role="tabpanel" aria-labelledby="nav-repeat-tab">
+    <div class="tab-pane fade show active mt-5" id="nav-repeat" role="tabpanel" aria-labelledby="nav-repeat-tab">
         <div class="card content m-auto" style="width: 36rem" id="card">
             <!--<img src="..." class="card-img-top" alt="...">-->
             <div class="d-none">{{ word }}</div>
@@ -229,28 +240,63 @@
             </tr>
         </table>
     </div>
-    <div class="tab-pane fade" id="nav-dict" role="tabpanel" aria-labelledby="nav-dict-tab">
+    <div class="tab-pane fade mt-5" id="nav-dict" role="tabpanel" aria-labelledby="nav-dict-tab">
         <table class="table table-dark m-auto" id="dict" style="width: 36rem">
             <tr v-for="card in cards" :key="card.text">
                 <td>{{ card.word }}</td>
                 <td class="w-25">
                     <select class="form-select form-select-sm bg-secondary border-secondary text-white" data-style="btn-secondary" v-model="card.status" @change="change(card.word, card.status)">
-                        <option value="LEARNING">LEARNING</option>
-                        <option value="THREE_DAYS">THREE_DAYS</option>
-                        <option value="ONE_WEEK">ONE_WEEK</option>
-                        <option value="TWO_WEEKS">TWO_WEEKS</option>
-                        <option value="ONE_MONTH">ONE_MONTH</option>
-                        <option value="TWO_MONTHS">TWO_MONTHS</option>
-                        <option value="FOUR_MONTHS">FOUR_MONTHS</option>
-                        <option value="ONE_YEAR">ONE_YEAR</option>
-                        <option value="INFINITY">INFINITY</option>
+                        <option value="LEARNING">Learning</option>
+                        <option value="THREE_DAYS">Three days</option>
+                        <option value="ONE_WEEK">One week</option>
+                        <option value="TWO_WEEKS">Two weeks</option>
+                        <option value="ONE_MONTH">One month</option>
+                        <option value="TWO_MONTHS">Two months</option>
+                        <option value="FOUR_MONTHS">Four months</option>
+                        <option value="ONE_YEAR">One year</option>
+                        <option value="INFINITY">Don't repeat</option>
                     </select>
                 </td>
             </tr>
         </table>
     </div>
-    <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
-        <table class="table table-dark m-auto" id="settings" style="width: 36rem">
+    <div class="tab-pane fade mt-5" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
+        <table class="table table-dark m-auto" style="width: 36rem">
+            <tr>
+                <td colspan="3">
+                    <i class="bi bi-person h3 m-2"></i>
+                    <span v-text="username"></span>
+                </td>
+                <td>
+                    <a class="btn btn-rd text-white ml-3 active" href="/logout">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td class="w-25">
+                    <div class="input-group">
+                        <input class="form-control form-select-sm bg-secondary border-secondary text-white w165 mt-1" type="password" placeholder="Old password" v-model="passwordOld"/>
+                    </div>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <input class="form-control form-select-sm bg-secondary border-secondary text-white w165 mt-1" type="password" placeholder="New password" v-model="passwordNew"/>
+                    </div>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <input class="form-control form-select-sm bg-secondary border-secondary text-white w165 mt-1" type="password" placeholder="Repeat new password" v-model="passwordConfirm"/>
+                    </div>
+                </td>
+                <td>
+                    <button class="btn btn-success text-white ml-3 active" v-on:click="changePassword()"><i class="bi bi-pencil"></i></button>
+                    <span class="h2 position-right fw-bold" :class="{ 'text-success': passwordResult, 'text-danger': passwordResult === false }"
+                          v-text="passwordResult === true ? '✓' : passwordResult === false ? '✘' : ''"></span>
+                </td>
+            </tr>
+        </table>
+        <table class="table table-dark m-auto mt-5" style="width: 36rem">
             <tr>
                 <td>Voice enabled</td>
                 <td class="w-25">
@@ -520,8 +566,14 @@
     });
 
     var settings = new Vue({
-        el: '#settings',
+        el: '#nav-settings',
         data: {
+            username: '',
+            passwordOld: '',
+            passwordNew: '',
+            passwordConfirm: '',
+            passwordResult: null,
+            passwordResult2: null,
             voiceEnabled: true,
             voiceCard: '',
             voiceChatLeft: '',
@@ -535,12 +587,34 @@
                     .then(response => log(response))
                     .then(response => response.json())
                     .then(response => {
+                        this.username = response.username;
                         this.voiceEnabled = response.voiceEnabled;
                         this.voiceCard = response.voiceCard;
                         this.voiceChatLeft = response.voiceChatLeft;
                         this.voiceChatRight = response.voiceChatRight;
                         this.voiceRate = response.voiceRate;
                         this.voiceVolume = response.voiceVolume;
+                    })
+                    .catch(handleError);
+            },
+            changePassword() {
+                fetch('http://localhost:8080/api/user/password/change', {
+                    method: 'POST',
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        passwordOld: this.passwordOld,
+                        passwordNew: this.passwordNew,
+                        passwordConfirm: this.passwordConfirm
+                    })
+                })
+                    .then(response => log(response))
+                    .then(response => response.text())
+                    .then(response => {
+                        this.passwordOld = '';
+                        this.passwordNew = '';
+                        this.passwordConfirm = '';
+                        this.passwordResult = response === 'true';
+                        this.passwordResult2 = response;
                     })
                     .catch(handleError);
             },

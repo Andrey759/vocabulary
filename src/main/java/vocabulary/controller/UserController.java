@@ -3,16 +3,15 @@ package vocabulary.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import vocabulary.controller.dto.ChangePasswordDto;
 import vocabulary.controller.dto.UserDto;
 import vocabulary.entity.User;
 import vocabulary.entity.enums.Voice;
 import vocabulary.service.UserService;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,11 +28,13 @@ public class UserController {
     }
 
     @PostMapping("/api/user/password/change")
-    public ResponseEntity<String> passwordChange(
-            @RequestBody String passwordOld, @RequestBody String passwordNew, @RequestBody String passwordConfirm) {
+    public ResponseEntity<Boolean> passwordChange(@RequestBody ChangePasswordDto dto) {
         log.info("GET /api/user/password/change");
-        boolean success = userService.changePassword(User.getCurrent(), passwordOld, passwordNew);
-        return ResponseEntity.ok("OK");
+        if (!Objects.equals(dto.getPasswordNew(), dto.getPasswordConfirm())) {
+            return ResponseEntity.ok(false);
+        }
+        boolean success = userService.changePassword(User.getCurrent(), dto.getPasswordOld(), dto.getPasswordNew());
+        return ResponseEntity.ok(success);
     }
 
     @PostMapping(value = "/api/user/voice/card")

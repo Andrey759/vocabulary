@@ -32,7 +32,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserDto getUser(String username) {
-        return userRepository.findById(username).map(UserDto::from).orElse(UserDto.EMPTY);
+        return userRepository.findById(username).map(UserDto::from).orElse(UserDto.emptyForUser(username));
     }
 
     @Transactional

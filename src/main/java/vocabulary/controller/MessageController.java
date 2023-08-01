@@ -8,6 +8,7 @@ import vocabulary.entity.Message;
 import vocabulary.entity.User;
 import vocabulary.service.MessageService;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -20,6 +21,9 @@ public class MessageController {
     public ResponseEntity<List<Message>> getChat() {
         log.info("GET /api/chat");
         List<Message> messages = messageService.getAll(User.getCurrent());
+        if (messages.size() == 0) {
+            messages = Collections.singletonList(Message.HELLO);
+        }
         log.info("GET /api/chat Response: {}", messages);
         return ResponseEntity.ok(messages);
     }

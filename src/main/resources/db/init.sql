@@ -7,8 +7,8 @@ CREATE TABLE user (
     voice_card VARCHAR(50),
     voice_chat_left VARCHAR(50),
     voice_chat_right VARCHAR(50),
-    voice_rate NUMERIC,
-    voice_volume NUMERIC
+    voice_rate DOUBLE,
+    voice_volume DOUBLE
 );
 
 CREATE TABLE card (
