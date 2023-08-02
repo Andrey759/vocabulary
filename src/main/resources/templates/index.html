@@ -367,7 +367,7 @@
         },
         methods: {
             add() {
-                fetch('http://localhost:8080/api/add/' + this.word)
+                fetch('/api/add/' + this.word)
                     .then(response => log(response))
                     .then(response => response.text())
                     .then(response => {
@@ -403,7 +403,7 @@
                 this.sentenceHtml = '';
                 this.explanationHtml = '';
                 this.translationHtml = '';
-                fetch('http://localhost:8080/api/reset/' + this.word)
+                fetch('/api/reset/' + this.word)
                     .then(response => log(response))
                     .then(response => response.json())
                     .then(response => {
@@ -421,7 +421,7 @@
                 this.sentenceHtml = 'Loading...';
                 this.explanationHtml = '';
                 this.translationHtml = '';
-                fetch('http://localhost:8080/api/another/' + this.word)
+                fetch('/api/another/' + this.word)
                     .then(response => response.json())
                     .then(response => {
                         this.word = response.word;
@@ -437,7 +437,7 @@
                 //this.sentenceHtml = '';
                 //this.explanationHtml = '';
                 //this.translationHtml = '';
-                fetch('http://localhost:8080/api/next/' + this.word)
+                fetch('/api/next/' + this.word)
                     .then(response => log(response))
                     .then(response => response.json())
                     .then(this.handleResponse)
@@ -497,7 +497,7 @@
             init() {
                 this.disabled = true;
 
-                fetch('http://localhost:8080/api/chat')
+                fetch('/api/chat')
                     .then(response => log(response))
                     .then(response => response.json())
                     .then(response => {
@@ -517,7 +517,7 @@
                 this.messages.push({owner: "USER", correctedHtml: newMessage});
                 this.messages.push({owner: "BOT", correctedHtml: 'Loading.....'});
 
-                fetch('http://localhost:8080/api/chat', {method: 'POST', body: newMessage})
+                fetch('/api/chat', {method: 'POST', body: newMessage})
                     .then(response => log(response))
                     .then(response => response.json())
                     .then(response => {
@@ -540,7 +540,7 @@
         },
         methods: {
             update() {
-                fetch('http://localhost:8080/api/dict')
+                fetch('/api/dict')
                     .then(response => log(response))
                     .then(response => response.json())
                     .then(response => {
@@ -549,7 +549,7 @@
                     .catch(handleError);
             },
             change(word, status) {
-                fetch('http://localhost:8080/api/dict', {
+                fetch('/api/dict', {
                     method: 'POST',
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ word: word, status: status })
@@ -583,7 +583,7 @@
         },
         methods: {
             load() {
-                fetch('http://localhost:8080/api/user')
+                fetch('/api/user')
                     .then(response => log(response))
                     .then(response => response.json())
                     .then(response => {
@@ -598,7 +598,7 @@
                     .catch(handleError);
             },
             changePassword() {
-                fetch('http://localhost:8080/api/user/password/change', {
+                fetch('/api/user/password/change', {
                     method: 'POST',
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -619,7 +619,7 @@
                     .catch(handleError);
             },
             saveVoiceEnabled() {
-                fetch('http://localhost:8080/api/user/voice/enabled', {
+                fetch('/api/user/voice/enabled', {
                     method: 'POST',
                     body: this.voiceEnabled
                 })
@@ -627,7 +627,7 @@
                     .catch(handleError);
             },
             saveVoiceCard() {
-                fetch('http://localhost:8080/api/user/voice/card', {
+                fetch('/api/user/voice/card', {
                     method: 'POST',
                     body: this.voiceCard
                 })
@@ -635,7 +635,7 @@
                     .catch(handleError);
             },
             saveVoiceChatLeft() {
-                fetch('http://localhost:8080/api/user/voice/chat/left', {
+                fetch('/api/user/voice/chat/left', {
                     method: 'POST',
                     body: this.voiceChatLeft
                 })
@@ -643,7 +643,7 @@
                     .catch(handleError);
             },
             saveVoiceChatRight() {
-                fetch('http://localhost:8080/api/user/voice/chat/right', {
+                fetch('/api/user/voice/chat/right', {
                     method: 'POST',
                     body: this.voiceChatRight
                 })
@@ -651,7 +651,7 @@
                     .catch(handleError);
             },
             saveVoiceRate() {
-                fetch('http://localhost:8080/api/user/voice/rate', {
+                fetch('/api/user/voice/rate', {
                     method: 'POST',
                     body: this.voiceRate
                 })
@@ -659,7 +659,7 @@
                     .catch(handleError);
             },
             saveVoiceVolume() {
-                fetch('http://localhost:8080/api/user/voice/volume', {
+                fetch('/api/user/voice/volume', {
                     method: 'POST',
                     body: this.voiceVolume
                 })

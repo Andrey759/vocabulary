@@ -48,6 +48,14 @@ public class UserService {
     }
 
     @Transactional
+    public void setVoiceEnabled(String username, boolean voiceEnabled) {
+        userRepository.findById(username).map(user -> {
+            user.setVoiceEnabled(voiceEnabled);
+            return user;
+        }).ifPresent(userRepository::save);
+    }
+
+    @Transactional
     public void setVoiceCard(String username, Voice voiceCard) {
         userRepository.findById(username).map(user -> {
             user.setVoiceCard(voiceCard);

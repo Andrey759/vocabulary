@@ -37,6 +37,13 @@ public class UserController {
         return ResponseEntity.ok(success);
     }
 
+    @PostMapping(value = "/api/user/voice/enabled")
+    public ResponseEntity<String> voiceEnabled(@RequestBody String voiceEnabled) {
+        log.info("POST /api/user/voice/enabled {}", voiceEnabled);
+        userService.setVoiceEnabled(User.getCurrent(), Boolean.parseBoolean(voiceEnabled));
+        return ResponseEntity.ok("OK");
+    }
+
     @PostMapping(value = "/api/user/voice/card")
     public ResponseEntity<String> voiceCard(@RequestBody String voiceCard) {
         log.info("POST /api/user/voice/card {}", voiceCard);

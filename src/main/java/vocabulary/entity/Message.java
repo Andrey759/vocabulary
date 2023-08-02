@@ -15,9 +15,9 @@ import static vocabulary.controller.enums.MessageOwner.BOT;
 @AllArgsConstructor
 @Builder
 public class Message {
-    private static final String HELLO_TEXT = "Hello! I'm ChatGPT. " +
-            "You can start messaging with me and I will correct your messages' grammar. " +
-            "Also you choose voice and set its volume in the settings section.";
+    private static final String HELLO_TEXT = "Hello! I'm ChatGPT. You can start messaging with me, " +
+            "and I'll correct your message's grammar. Additionally, you can choose a voice " +
+            "and adjust its volume in the settings section.";
     public static final Message HELLO = new Message(
             null,
             null,
