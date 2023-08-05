@@ -27,7 +27,7 @@ import static vocabulary.controller.enums.MessageOwner.USER;
 @RequiredArgsConstructor
 @Slf4j
 public class ChatGptService {
-    private final DiffService restService;
+    private final ParsingService parsingService;
     private OpenAiService service;
     @Value("${gpt.token}")
     private String gptToken;
@@ -58,68 +58,24 @@ public class ChatGptService {
         if (StringUtils.isEmpty(word)) {
             return CardDto.EMPTY;
         }
-        log.info("Word: {} Sending request to gpt...", word);
+        String request = String.format(gptMessageCard, word);
+        String response = receive(username, request);
 
-        List<String> lines = receiveLines(username + "-cards", String.format(gptMessageCard, word));
+        log.info("Word: {} Response:\n{}", word, response);
 
-        String sentence = lines.get(0);
-        String sentenceHtml = lines.get(1);
-        String explanationHtml = lines.get(2);
-        String translationHtml = lines.get(3);
-        if (explanationHtml.contains("means")) {
-            explanationHtml = explanationHtml.split("means")[1].trim();
-        }
-
-        CardDto cardDto = new CardDto(
-                word,
-                sentence,
-                sentenceHtml,
-                explanationHtml,
-                translationHtml
-        );
-        log.info("Word: {} Parsed result: {}", word, cardDto);
-
-        return cardDto;
+        return parsingService.parseCardDto(username, word, response);
     }
 
-    public List<Message> sendAndParseMessage(String username, String source) {
-        if (StringUtils.isEmpty(source)) {
+    public List<Message> sendAndParseMessage(String username, String newMessage) {
+        if (StringUtils.isEmpty(newMessage)) {
             return Collections.emptyList();
         }
-        log.info("Message: {} Sending request to gpt...", source);
+        String request = String.format(gptMessageChat, newMessage);
+        String response = receive(username, request);
 
-        List<String> lines = receiveLines(username, String.format(gptMessageChat, source));
+        log.info("New message: {} Response:\n{}", newMessage, response);
 
-        Integer mark = Integer.valueOf(lines.get(0).split("/")[0].replaceAll("\\D+", ""));
-        if (mark > 10) {
-            mark = mark / 100;
-        }
-        String answer = lines.get(1);
-        String corrected = lines.get(2);
-        String perfect = lines.get(3);
-        String correctedHtml = restService.calculateCorrectedHtml(source, corrected);
-
-        Message userMessageDto = new Message(
-                LocalDateTime.now().getLong(MILLI_OF_DAY),
-                username,
-                USER,
-                mark,
-                corrected,
-                correctedHtml,
-                perfect
-        );
-        Message botMessageDto = new Message(
-                LocalDateTime.now().getLong(MILLI_OF_DAY) + 1,
-                username,
-                BOT,
-                null,
-                answer,
-                answer,
-                ""
-        );
-        log.info("Message: {} Parsed result: {} {}", source, userMessageDto, botMessageDto);
-
-        return List.of(userMessageDto, botMessageDto);
+        return parsingService.parseMessages(username, response);
     }
 
     private List<String> receiveLines(String username, String message) {
@@ -146,7 +102,7 @@ public class ChatGptService {
                 .findFirst()
                 .map(ChatCompletionChoice::getMessage)
                 .map(ChatMessage::getContent)
-                .orElse(null)
+                .orElse("")
                 .replaceAll("\n\n", "\n");
 
         log.info("ChatGPT response:\n{}", response);

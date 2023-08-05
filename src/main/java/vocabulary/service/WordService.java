@@ -84,6 +84,7 @@ public class WordService {
         wordRepository.findByUsernameAndWord(username, word)
                 .map(card -> {
                     card.setStatus(status);
+                    card.setReadyAt(status.readyAt(card.getUpdatedAt()));
                     return card;
                 })
                 .ifPresent(wordRepository::save);
@@ -92,29 +93,37 @@ public class WordService {
 
 
     private CardDto getCardDtoToRepeat(String username) {
-        return wordRepository.findByUsernameAndReadyAtLessThan(username, LocalDateTime.now())
+        return wordRepository.findByUsernameAndReadyAtLessThanOrderByRepeatOrderAsc(username, LocalDateTime.now())
+                .stream()
+                .findFirst()
                 .map(CardDto::from)
                 .orElse(EMPTY);
     }
 
     private Card fillFieldsForReset(Card card) {
+        LocalDateTime updatedAt = LocalDateTime.now();
         card.setSentence(null);
         card.setSentenceHtml(null);
         card.setExplanationHtml(null);
         card.setTranslationHtml(null);
         card.setStatus(LEARNING);
-        card.setReadyAt(LEARNING.readyAt());
+        card.setUpdatedAt(updatedAt);
+        card.setReadyAt(LEARNING.readyAt(updatedAt));
+        card.randomOrder();
         return card;
     }
 
     private Card fillFieldsForNextStatus(Card card) {
+        LocalDateTime updatedAt = LocalDateTime.now();
         CardStatus newStatus = card.getStatus().nextStatus();
         card.setSentence(null);
         card.setSentenceHtml(null);
         card.setExplanationHtml(null);
         card.setTranslationHtml(null);
         card.setStatus(newStatus);
-        card.setReadyAt(newStatus.readyAt());
+        card.setUpdatedAt(updatedAt);
+        card.setReadyAt(newStatus.readyAt(updatedAt));
+        card.randomOrder();
         return card;
     }
 }

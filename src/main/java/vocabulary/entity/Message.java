@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 import vocabulary.controller.enums.MessageOwner;
 
+import java.time.LocalDateTime;
+
 import static jakarta.persistence.EnumType.STRING;
 import static vocabulary.controller.enums.MessageOwner.BOT;
 
-@Entity
+@Entity(name = "messages")
 @Getter
 @Setter
 @ToString
@@ -23,9 +25,11 @@ public class Message {
             null,
             BOT,
             null,
+            "",
             HELLO_TEXT,
             HELLO_TEXT,
-            ""
+            "",
+            LocalDateTime.now()
     );
 
     @Id
@@ -34,7 +38,9 @@ public class Message {
     @Enumerated(value = STRING)
     private MessageOwner owner;
     private Integer mark;
+    private String response;
     private String corrected;
     private String correctedHtml;
     private String perfect;
+    private LocalDateTime createdAt;
 }

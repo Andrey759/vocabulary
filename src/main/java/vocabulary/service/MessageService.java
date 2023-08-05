@@ -22,8 +22,8 @@ public class MessageService {
     }
 
     @Transactional
-    public List<Message> saveAndGetAll(String username, String source) {
-        List<Message> newMessages = chatGptService.sendAndParseMessage(username, source);
+    public List<Message> saveAndGetAll(String username, String newMessage) {
+        List<Message> newMessages = chatGptService.sendAndParseMessage(username, newMessage);
         messageRepository.saveAll(newMessages);
         return messageRepository.findAllByUsername(username);
     }

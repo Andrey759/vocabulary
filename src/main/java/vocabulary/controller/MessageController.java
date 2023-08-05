@@ -8,6 +8,7 @@ import vocabulary.entity.Message;
 import vocabulary.entity.User;
 import vocabulary.service.MessageService;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,9 +19,9 @@ public class MessageController {
     private final MessageService messageService;
 
     @GetMapping("/api/chat")
-    public ResponseEntity<List<Message>> getChat() {
+    public ResponseEntity<List<Message>> getChat(Principal principal) {
         log.info("GET /api/chat");
-        List<Message> messages = messageService.getAll(User.getCurrent());
+        List<Message> messages = messageService.getAll(principal.getName());
         if (messages.size() == 0) {
             messages = Collections.singletonList(Message.HELLO);
         }
@@ -29,9 +30,9 @@ public class MessageController {
     }
 
     @PostMapping("/api/chat")
-    public ResponseEntity<List<Message>> postChat(@RequestBody String newMessage) {
+    public ResponseEntity<List<Message>> postChat(Principal principal, @RequestBody String newMessage) {
         log.info("POST /api/chat {}", newMessage);
-        List<Message> messages = messageService.saveAndGetAll(User.getCurrent(), newMessage);
+        List<Message> messages = messageService.saveAndGetAll(principal.getName(), newMessage);
         log.info("POST /api/chat {} Response: {}", newMessage, messages);
         return ResponseEntity.ok(messages);
     }

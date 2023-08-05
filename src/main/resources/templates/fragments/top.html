@@ -1,0 +1,43 @@
+
+<div class="row" id="new-word">
+    <div class="col input-group">
+        <input type="text" class="form-control rounded-left mt-1px" placeholder="Add new word..." v-model="word"/>
+        <button class="btn btn-lg btn-success rounded-right" v-on:click="add">
+            <i class="bi bi-pencil text-white"></i>
+        </button>
+        {{ result }}
+    </div>
+    <div class="col col-md-8"></div>
+    <div class="col">
+        <div class="nav nav-pills float-right" id="nav" role="tablist">
+            <button class="btn btn-lg btn-teal-blue text-white ml-3 active"
+                    data-bs-toggle="tab"
+                    data-bs-target="#nav-repeat"
+                    role="tab"
+                    aria-controls="nav-repeat"
+                    aria-selected="true">
+                <i class="bi bi-book"></i></button>
+            <button class="btn btn-lg btn-teal-blue text-white ml-3"
+                    data-bs-toggle="tab"
+                    data-bs-target="#nav-chat"
+                    role="tab"
+                    aria-controls="nav-chat"
+                    aria-selected="false">
+                <i class="bi bi-chat-right-text"></i></button>
+            <button class="btn btn-lg btn-teal text-white ml-3"
+                    data-bs-toggle="tab"
+                    data-bs-target="#nav-dict"
+                    role="tab"
+                    aria-controls="nav-dict"
+                    aria-selected="false">
+                <i class="bi bi-clipboard-check"></i></button>
+            <button class="btn btn-lg btn-teal-dark text-white ml-3"
+                    data-bs-toggle="tab"
+                    data-bs-target="#nav-settings"
+                    role="tab"
+                    aria-controls="nav-settings"
+                    aria-selected="false">
+                <i class="bi bi-gear-fill"></i></button>
+        </div>
+    </div>
+</div>

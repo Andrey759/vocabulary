@@ -1,0 +1,21 @@
+
+<div class="tab-pane fade mt-5" id="nav-dict" role="tabpanel" aria-labelledby="nav-dict-tab">
+    <table class="table table-dark m-auto" id="dict" style="width: 36rem">
+        <tr v-for="card in cards" :key="card.text">
+            <td>{{ card.word }}</td>
+            <td class="w-25">
+                <select class="form-select form-select-sm bg-secondary border-secondary text-white" data-style="btn-secondary" v-model="card.status" @change="change(card.word, card.status)">
+                    <option value="LEARNING">Learning</option>
+                    <option value="THREE_DAYS">Three days</option>
+                    <option value="ONE_WEEK">One week</option>
+                    <option value="TWO_WEEKS">Two weeks</option>
+                    <option value="ONE_MONTH">One month</option>
+                    <option value="TWO_MONTHS">Two months</option>
+                    <option value="FOUR_MONTHS">Four months</option>
+                    <option value="ONE_YEAR">One year</option>
+                    <option value="INFINITY">Don't repeat</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+</div>
