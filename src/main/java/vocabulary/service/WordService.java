@@ -33,20 +33,20 @@ public class WordService {
     }
 
     @Transactional
-    public AddedOrReset addOrReset(String username, String word) {
+    public boolean addOrReset(String username, String word) {
         Optional<Card> cardOptional = wordRepository.findByUsernameAndWord(username, word);
         if (cardOptional.isPresent()) {
             cardOptional.get().setStatus(LEARNING);
             wordRepository.save(cardOptional.get());
-            return RESET;
+            return false;
         }
         wordRepository.save(Card.create(username, word));
-        return ADDED;
+        return true;
     }
 
     @Transactional
-    public void delete(String username, String word) {
-        wordRepository.deleteByUsernameAndWord(username, word);
+    public Integer delete(String username, String word) {
+        return wordRepository.deleteByUsernameAndWord(username, word);
     }
 
     @Transactional

@@ -3,10 +3,12 @@ package vocabulary.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import vocabulary.controller.dto.ChangePasswordDto;
 import vocabulary.controller.dto.UserDto;
-import vocabulary.entity.User;
 import vocabulary.entity.enums.Voice;
 import vocabulary.service.UserService;
 
@@ -24,7 +26,6 @@ public class UserController {
     public ResponseEntity<UserDto> user(Principal principal) {
         log.info("GET /api/user");
         UserDto user = userService.getUser(principal.getName());
-        log.info("GET /api/user Response: {}", user);
         return ResponseEntity.ok(user);
     }
 

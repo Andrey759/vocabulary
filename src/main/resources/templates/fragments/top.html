@@ -1,11 +1,13 @@
 
-<div class="row" id="new-word">
+<div class="row" id="top-panel">
     <div class="col input-group">
-        <input type="text" class="form-control rounded-left mt-1px" placeholder="Add new word..." v-model="word"/>
+        <input type="text" class="form-control rounded-left mt-1px"
+               placeholder="Add new word..." v-model="word" :disabled="!enabled"/>
         <button class="btn btn-lg btn-success rounded-right" v-on:click="add">
             <i class="bi bi-pencil text-white"></i>
         </button>
-        {{ result }}
+        <span class="h2 position-right-big fw-bold text-success" v-show="resultVisible && created">✓</span>
+        <span class="h2 position-right-big fw-bold text-success" v-show="resultVisible && !created"><i class="bi bi-arrow-clockwise"></i></span>
     </div>
     <div class="col col-md-8"></div>
     <div class="col">

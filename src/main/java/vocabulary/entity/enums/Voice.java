@@ -1,6 +1,7 @@
 package vocabulary.entity.enums;
 
 public enum Voice {
+    NONE,
     UK_ENGLISH_FEMALE,
     UK_ENGLISH_MALE,
     US_ENGLISH_FEMALE,

@@ -1,20 +1,29 @@
 
-var newWord = new Vue({
-    el: '#new-word',
+var topPanel = new Vue({
+    el: '#top-panel',
     data: {
         word: '',
-        result: ''
+        enabled: true,
+        oldWord: '',
+        created: true,
+        resultVisible: false
     },
     methods: {
         add() {
+            this.enabled = false;
             fetch('/api/add/' + this.word)
                 .then(response => log(response))
                 .then(response => response.text())
                 .then(response => {
-                    this.result = response;
+                    this.oldWord = this.word;
+                    this.word = '';
+                    this.created = response === 'true';
+                    this.resultVisible = true;
+                    setTimeout(() => this.resultVisible = false, 5000);
                     dict.update();
                 })
-                .catch(handleError);
+                .catch(handleError)
+                .finally(() => this.enabled = true);
         }
     },
 });

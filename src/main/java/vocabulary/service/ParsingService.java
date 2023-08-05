@@ -27,6 +27,7 @@ public class ParsingService {
         String translationHtml = lines.get(3);
         if (explanationHtml.contains("means")) {
             explanationHtml = explanationHtml.split("means")[1].trim();
+            explanationHtml = explanationHtml.substring(0, 1).toUpperCase() + explanationHtml.substring(1);
         }
 
         return new CardDto(
@@ -87,7 +88,6 @@ public class ParsingService {
                 .map(str -> str.matches("^[0-9]\\.-.+") ? str.substring(3) : str)
                 .map(str -> str.contains(":") ? str.substring(str.indexOf(":") + 1) : str)
                 .map(str -> str.replaceAll("\"", ""))
-                .map(str -> str.replaceAll("'", ""))
                 .map(String::trim)
                 .toList();
     }

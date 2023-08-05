@@ -7,8 +7,7 @@ var settings = new Vue({
         passwordNew: '',
         passwordConfirm: '',
         passwordResult: null,
-        passwordResult2: null,
-        voiceEnabled: true,
+        voiceEnabled: false,
         voiceCard: '',
         voiceChatLeft: '',
         voiceChatRight: '',
@@ -48,7 +47,6 @@ var settings = new Vue({
                     this.passwordNew = '';
                     this.passwordConfirm = '';
                     this.passwordResult = response === 'true';
-                    this.passwordResult2 = response;
                 })
                 .catch(handleError);
         },

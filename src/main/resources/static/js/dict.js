@@ -24,6 +24,20 @@ var dict = new Vue({
                 .then(response => response.json())
                 .then(card.handleResponse)
                 .catch(handleError);
+        },
+        deleteWord(word) {
+            fetch('/api/dict', {
+                method: 'DELETE',
+                body: word
+            })
+                .then(response => log(response))
+                .then(() => {
+                    this.cards = this.cards.filter(card => card.word !== word);
+                    if (word === card.word) {
+                        card.update();
+                    }
+                })
+                .catch(handleError);
         }
     },
     mounted() {

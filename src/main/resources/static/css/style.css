@@ -8,6 +8,9 @@
 .dimgray {
     color: dimgray;
 }
+.w32 {
+    width: 32px !important;
+}
 .w165 {
     width: 165px !important;
 }
@@ -92,6 +95,11 @@
 .position-right {
     position: absolute;
     margin-left: 10px;
+}
+.position-right-big {
+    position: absolute;
+    top: 5px;
+    right: -35px;
 }
 .nav .btn:not(.active) {
     filter: brightness(55%);

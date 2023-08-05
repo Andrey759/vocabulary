@@ -35,7 +35,7 @@ var chat = new Vue({
                 .then(response => response.json())
                 .then(response => {
                     this.messages = response;
-                    speak(this.messages[this.messages.length - 1].corrected);
+                    speakChatAuto(this.messages[this.messages.length - 2].corrected, this.messages[this.messages.length - 1].corrected);
                 })
                 .catch(handleError)
                 .finally(() => this.disabled = false);

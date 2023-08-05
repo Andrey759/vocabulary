@@ -10,9 +10,38 @@ var handleError = (response) => {
         console.log(response);
     }
 }
-var speak = (text) => {
-    responsiveVoice.speak(text, 'UK English Male', {rate: settings.voiceRate, volume: settings.voiceVolume});
+var speakCard = () => {
+    if (settings.voiceCard !== 'NONE' && card.sentence) {
+        card.playing = true;
+        responsiveVoice.speak(card.sentence, voiceMap(settings.voiceCard),
+            {rate: settings.voiceRate, volume: settings.voiceVolume, onend: () => card.playing = false});
+    }
 }
-var stopSpeak = () => {
-    responsiveVoice.cancel();
+var speakCardAuto = () => {
+    if (settings.voiceEnabled && settings.voiceCard !== 'NONE' && card.sentence) {
+        card.playing = true;
+        responsiveVoice.speak(card.sentence, voiceMap(settings.voiceCard),
+            {rate: settings.voiceRate, volume: settings.voiceVolume, onend: () => card.playing = false});
+    }
+}
+var speakChatAuto = (right, left) => {
+    speak(right, settings.voiceChatRight, () => speak(left, settings.voiceChatLeft));
+}
+var speak = (text, voice, onend) => {
+    if (settings.voiceEnabled && voice !== 'NONE') {
+        responsiveVoice.speak(text, voiceMap(voice),
+            {rate: settings.voiceRate, volume: settings.voiceVolume, onend: onend});
+    }
+}
+var voiceMap = (voice) => {
+    switch (voice) {
+        case 'UK_ENGLISH_MALE':
+            return 'UK English Male';
+        case 'UK_ENGLISH_FEMALE':
+            return 'UK English Female';
+        case 'US_ENGLISH_FEMALE':
+            return 'US English Female';
+        case 'US_ENGLISH_MALE':
+            return 'US English Male';
+    }
 }
