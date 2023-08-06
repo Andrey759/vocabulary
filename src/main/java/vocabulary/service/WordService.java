@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vocabulary.controller.dto.CardDto;
-import vocabulary.controller.enums.AddedOrReset;
 import vocabulary.entity.Card;
 import vocabulary.entity.enums.CardStatus;
 import vocabulary.repository.WordRepository;
@@ -15,8 +14,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static vocabulary.controller.dto.CardDto.EMPTY;
-import static vocabulary.controller.enums.AddedOrReset.ADDED;
-import static vocabulary.controller.enums.AddedOrReset.RESET;
 import static vocabulary.entity.enums.CardStatus.LEARNING;
 
 @Service
@@ -36,8 +33,10 @@ public class WordService {
     public boolean addOrReset(String username, String word) {
         Optional<Card> cardOptional = wordRepository.findByUsernameAndWord(username, word);
         if (cardOptional.isPresent()) {
-            cardOptional.get().setStatus(LEARNING);
-            wordRepository.save(cardOptional.get());
+            Card card = cardOptional.get();
+            card.setStatus(LEARNING);
+            card.setReadyAt(LEARNING.readyAt(card.getUpdatedAt()));
+            wordRepository.save(card);
             return false;
         }
         wordRepository.save(Card.create(username, word));
@@ -102,6 +101,7 @@ public class WordService {
 
     private Card fillFieldsForReset(Card card) {
         LocalDateTime updatedAt = LocalDateTime.now();
+        card.setResponse(null);
         card.setSentence(null);
         card.setSentenceHtml(null);
         card.setExplanationHtml(null);
@@ -116,6 +116,7 @@ public class WordService {
     private Card fillFieldsForNextStatus(Card card) {
         LocalDateTime updatedAt = LocalDateTime.now();
         CardStatus newStatus = card.getStatus().nextStatus();
+        card.setResponse(null);
         card.setSentence(null);
         card.setSentenceHtml(null);
         card.setExplanationHtml(null);

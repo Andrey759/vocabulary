@@ -48,12 +48,9 @@
             <td>Voice for repeating words</td>
             <td class="w-25">
                 <select class="form-select form-select-sm bg-secondary border-secondary text-white w165" data-style="btn-secondary" v-model="voiceCard" @change="saveVoiceCard()">
-                    <option value="NONE">None</option>
-                    <option value="UK_ENGLISH_FEMALE">UK English Female</option>
-                    <option value="UK_ENGLISH_MALE">UK English Male</option>
-                    <option value="US_ENGLISH_FEMALE">US English Female</option>
-                    <option value="US_ENGLISH_MALE">US English Male</option>
-                    <!--<option value="RANDOM">Random</option>-->
+                    <option th:each="voice : ${T(vocabulary.entity.enums.Voice).values()}"
+                            th:value="${voice.name()}"
+                            th:text="#{${'voice.' + voice.name().toLowerCase()}}"></option>
                 </select>
             </td>
         </tr>
@@ -61,12 +58,9 @@
             <td>Voice for ChatGpt messages</td>
             <td class="w-25">
                 <select class="form-select form-select-sm bg-secondary border-secondary text-white w165" data-style="btn-secondary" v-model="voiceChatLeft" @change="saveVoiceChatLeft()">
-                    <option value="NONE">None</option>
-                    <option value="UK_ENGLISH_FEMALE">UK English Female</option>
-                    <option value="UK_ENGLISH_MALE">UK English Male</option>
-                    <option value="US_ENGLISH_FEMALE">US English Female</option>
-                    <option value="US_ENGLISH_MALE">US English Male</option>
-                    <!--<option value="RANDOM">Random</option>-->
+                    <option th:each="voice : ${T(vocabulary.entity.enums.Voice).values()}"
+                            th:value="${voice.name()}"
+                            th:text="#{${'voice.' + voice.name().toLowerCase()}}"></option>
                 </select>
             </td>
         </tr>
@@ -74,12 +68,9 @@
             <td>Voice for your messages</td>
             <td class="w-25">
                 <select class="form-select form-select-sm bg-secondary border-secondary text-white w165" data-style="btn-secondary" v-model="voiceChatRight" @change="saveVoiceChatRight()">
-                    <option value="NONE">None</option>
-                    <option value="UK_ENGLISH_FEMALE">UK English Female</option>
-                    <option value="UK_ENGLISH_MALE">UK English Male</option>
-                    <option value="US_ENGLISH_FEMALE">US English Female</option>
-                    <option value="US_ENGLISH_MALE">US English Male</option>
-                    <!--<option value="RANDOM">Random</option>-->
+                    <option th:each="voice : ${T(vocabulary.entity.enums.Voice).values()}"
+                            th:value="${voice.name()}"
+                            th:text="#{${'voice.' + voice.name().toLowerCase()}}"></option>
                 </select>
             </td>
         </tr>

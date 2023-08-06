@@ -7,12 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import vocabulary.controller.dto.CardDto;
-import vocabulary.controller.enums.AddedOrReset;
 import vocabulary.service.WordService;
 
 import java.security.Principal;
-
-import static vocabulary.controller.enums.AddedOrReset.ADDED;
 
 @RestController
 @RequiredArgsConstructor

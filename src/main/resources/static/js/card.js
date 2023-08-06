@@ -18,7 +18,7 @@ var card = new Vue({
         translationClick() {
             this.translationVisible = !this.translationVisible;
         },
-        firstLoad() {
+        loadWithoutAutoplay() {
             this.clearFields();
             fetch('/api/next/' + this.word)
                 .then(response => log(response))
@@ -102,6 +102,6 @@ var card = new Vue({
         responsiveVoice.speak('');
         //setTimeout(() => { responsiveVoice.allowSpeechClicked(true); }, 300);
         setTimeout(() => { responsiveVoice.allowSpeechClicked(true); }, 1000);
-        this.firstLoad();
+        this.loadWithoutAutoplay();
     }
 });

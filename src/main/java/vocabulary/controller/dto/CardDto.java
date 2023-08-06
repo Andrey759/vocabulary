@@ -9,9 +9,10 @@ import vocabulary.entity.Card;
 @RequiredArgsConstructor
 @ToString
 public class CardDto {
-    public static CardDto EMPTY = new CardDto("", "", "", "", "");
+    public static CardDto EMPTY = new CardDto("", "", "", "", "", "");
 
     private final String word;
+    private final String response;
     private final String sentence;
     private final String sentenceHtml;
     private final String explanationHtml;
@@ -20,6 +21,7 @@ public class CardDto {
     public static CardDto from(Card card) {
         return new CardDto(
                 card.getWord(),
+                card.getResponse(),
                 card.getSentence(),
                 card.getSentenceHtml(),
                 card.getExplanationHtml(),

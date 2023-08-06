@@ -18,7 +18,7 @@ import static vocabulary.controller.enums.MessageOwner.USER;
 public class ParsingService {
     private final DiffService diffService;
 
-    public CardDto parseCardDto(String username, String word, String response) {
+    public CardDto parseCardDto(String word, String response) {
         List<String> lines = receiveLines(response.replaceAll("\n\n", "\n"));
 
         String sentence = lines.get(0);
@@ -32,6 +32,7 @@ public class ParsingService {
 
         return new CardDto(
                 word,
+                response,
                 sentence,
                 sentenceHtml,
                 explanationHtml,

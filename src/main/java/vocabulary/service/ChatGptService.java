@@ -46,6 +46,7 @@ public class ChatGptService {
 
     public Card sendAndParseCard(Card card) {
         CardDto dto = sendAndParseCard(card.getUsername(), card.getWord());
+        card.setResponse(dto.getResponse());
         card.setSentence(dto.getSentence());
         card.setSentenceHtml(dto.getSentenceHtml());
         card.setExplanationHtml(dto.getExplanationHtml());
@@ -63,7 +64,7 @@ public class ChatGptService {
 
         log.info("Word: {} Response:\n{}", word, response);
 
-        return parsingService.parseCardDto(username, word, response);
+        return parsingService.parseCardDto(word, response);
     }
 
     public List<Message> sendAndParseMessage(String username, String newMessage) {

@@ -6,5 +6,8 @@ public enum Voice {
     UK_ENGLISH_MALE,
     US_ENGLISH_FEMALE,
     US_ENGLISH_MALE,
-    RANDOM,
+    RANDOM_UK,
+    RANDOM_US,
+    RANDOM_MALE,
+    RANDOM_FEMALE,
 }

@@ -15,7 +15,7 @@ public class ParsingServiceTest {
                 "a very small, tiny or insignificant amount.\n" +
                 "4. Она добавила всего лишь немного соли в суп, чтобы усилить его вкус.";
 
-        CardDto cardDto = parsingService.parseCardDto("Ivan", "smidge", source);
+        CardDto cardDto = parsingService.parseCardDto("smidge", source);
 
         assertEquals(cardDto.getSentence(),
                 "She added just a smidge of salt to the soup to enhance its flavor.");

@@ -43,5 +43,13 @@ var voiceMap = (voice) => {
             return 'US English Female';
         case 'US_ENGLISH_MALE':
             return 'US English Male';
+        case 'RANDOM_UK':
+            return ['UK_ENGLISH_MALE', 'UK_ENGLISH_FEMALE'][Math.floor(Math.random() * 2)];
+        case 'RANDOM_US':
+            return ['US_ENGLISH_MALE', 'US_ENGLISH_FEMALE'][Math.floor(Math.random() * 2)];
+        case 'RANDOM_MALE':
+            return ['UK_ENGLISH_MALE', 'US_ENGLISH_MALE'][Math.floor(Math.random() * 2)];
+        case 'RANDOM_FEMALE':
+            return ['UK_ENGLISH_FEMALE', 'US_ENGLISH_FEMALE'][Math.floor(Math.random() * 2)];
     }
 }
