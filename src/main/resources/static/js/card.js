@@ -75,7 +75,7 @@ var card = new Vue({
                 if (card.sentenceHtml !== 'No cards to repeat') {
                     this.sentenceHtml = 'No cards to repeat';
                 }
-                setTimeout(() => card.update(), 2000);
+                setTimeout(() => card.loadWithoutAutoplay(), 2000);
             } else {
                 this.word = response.word;
                 this.sentence = response.sentence;

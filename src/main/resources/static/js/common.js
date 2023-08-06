@@ -39,17 +39,19 @@ var voiceMap = (voice) => {
             return 'UK English Male';
         case 'UK_ENGLISH_FEMALE':
             return 'UK English Female';
-        case 'US_ENGLISH_FEMALE':
-            return 'US English Female';
         case 'US_ENGLISH_MALE':
             return 'US English Male';
+        case 'US_ENGLISH_FEMALE':
+            return 'US English Female';
+        case 'RANDOM':
+            return ['UK English Male', 'UK English Female', 'US English Male', 'US English Female'][Math.floor(Math.random() * 2)];
         case 'RANDOM_UK':
-            return ['UK_ENGLISH_MALE', 'UK_ENGLISH_FEMALE'][Math.floor(Math.random() * 2)];
+            return ['UK English Male', 'UK English Female'][Math.floor(Math.random() * 2)];
         case 'RANDOM_US':
-            return ['US_ENGLISH_MALE', 'US_ENGLISH_FEMALE'][Math.floor(Math.random() * 2)];
+            return ['US English Male', 'US English Female'][Math.floor(Math.random() * 2)];
         case 'RANDOM_MALE':
-            return ['UK_ENGLISH_MALE', 'US_ENGLISH_MALE'][Math.floor(Math.random() * 2)];
+            return ['UK English Male', 'US English Male'][Math.floor(Math.random() * 2)];
         case 'RANDOM_FEMALE':
-            return ['UK_ENGLISH_FEMALE', 'US_ENGLISH_FEMALE'][Math.floor(Math.random() * 2)];
+            return ['UK English Female', 'US English Female'][Math.floor(Math.random() * 2)];
     }
 }

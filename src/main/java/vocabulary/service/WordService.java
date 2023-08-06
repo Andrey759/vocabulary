@@ -35,7 +35,7 @@ public class WordService {
         if (cardOptional.isPresent()) {
             Card card = cardOptional.get();
             card.setStatus(LEARNING);
-            card.setReadyAt(LEARNING.readyAt(card.getUpdatedAt()));
+            card.setReadyAt(LocalDateTime.now());
             wordRepository.save(card);
             return false;
         }
@@ -100,21 +100,21 @@ public class WordService {
     }
 
     private Card fillFieldsForReset(Card card) {
-        LocalDateTime updatedAt = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
         card.setResponse(null);
         card.setSentence(null);
         card.setSentenceHtml(null);
         card.setExplanationHtml(null);
         card.setTranslationHtml(null);
         card.setStatus(LEARNING);
-        card.setUpdatedAt(updatedAt);
-        card.setReadyAt(LEARNING.readyAt(updatedAt));
+        card.setUpdatedAt(now);
+        card.setReadyAt(LEARNING.readyAt(now));
         card.randomOrder();
         return card;
     }
 
     private Card fillFieldsForNextStatus(Card card) {
-        LocalDateTime updatedAt = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
         CardStatus newStatus = card.getStatus().nextStatus();
         card.setResponse(null);
         card.setSentence(null);
@@ -122,8 +122,8 @@ public class WordService {
         card.setExplanationHtml(null);
         card.setTranslationHtml(null);
         card.setStatus(newStatus);
-        card.setUpdatedAt(updatedAt);
-        card.setReadyAt(newStatus.readyAt(updatedAt));
+        card.setUpdatedAt(now);
+        card.setReadyAt(newStatus.readyAt(now));
         card.randomOrder();
         return card;
     }
