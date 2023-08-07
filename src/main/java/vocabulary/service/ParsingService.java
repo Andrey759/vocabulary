@@ -37,7 +37,7 @@ public class ParsingService {
         return card;
     }
 
-    public List<Message> parseMessages(String username, String response) {
+    public List<Message> parseMessages(String username, String newMessage, String response) {
         List<String> lines = receiveLines(response);
 
         int mark = Integer.parseInt(lines.get(0).split("/")[0].replaceAll("\\D+", ""));
@@ -47,13 +47,14 @@ public class ParsingService {
         String answer = lines.get(1);
         String corrected = lines.get(2);
         String perfect = lines.get(3);
-        String correctedHtml = diffService.calculateCorrectedHtml(response, corrected);
+        String correctedHtml = diffService.calculateCorrectedHtml(newMessage, corrected);
 
         Message userMessageDto = new Message(
-                LocalDateTime.now().getLong(MILLI_OF_DAY),
+                null,
                 username,
                 USER,
                 mark,
+                newMessage,
                 response,
                 corrected,
                 correctedHtml,
@@ -61,10 +62,11 @@ public class ParsingService {
                 LocalDateTime.now()
         );
         Message botMessageDto = new Message(
-                LocalDateTime.now().getLong(MILLI_OF_DAY) + 1,
+                null,
                 username,
                 BOT,
-                null,
+                0,
+                "",
                 response,
                 answer,
                 answer,
@@ -85,6 +87,9 @@ public class ParsingService {
                 .map(str -> str.matches("^[0-9]\\. -.+") ? str.substring(4) : str)
                 .map(str -> str.matches("^[0-9]\\.-.+") ? str.substring(3) : str)
                 .map(str -> str.contains(":") ? str.substring(str.indexOf(":") + 1) : str)
+                .map(String::trim)
+                .map(str -> str.startsWith("'") && str.endsWith("'") ? str.substring(1, str.length() - 1) : str)
+                .map(str -> str.startsWith("\"") && str.endsWith("\"") ? str.substring(1, str.length() - 1) : str)
                 .map(str -> str.replaceAll("\"", ""))
                 .map(String::trim)
                 .toList();

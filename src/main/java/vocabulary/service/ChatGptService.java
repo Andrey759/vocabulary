@@ -34,7 +34,8 @@ public class ChatGptService {
     @PostConstruct
     public void postConstruct() {
         service = new OpenAiService(gptToken);
-        log.info("gpt.message: {}", gptMessageCard);
+        log.info("gpt.message.card: {}", gptMessageCard);
+        log.info("gpt.message.chat: {}", gptMessageChat);
     }
 
     // https://platform.openai.com/docs/models/model-endpoint-compatibility
@@ -53,9 +54,9 @@ public class ChatGptService {
         String request = String.format(gptMessageChat, newMessage);
         String response = receive(username, request);
 
-        log.info("New message: {} Response:\n{}", newMessage, response);
+        log.info("New message: {}\n{}", newMessage, response);
 
-        return parsingService.parseMessages(username, response);
+        return parsingService.parseMessages(username, newMessage, response);
     }
     private String receive(String username, String message) {
         ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()

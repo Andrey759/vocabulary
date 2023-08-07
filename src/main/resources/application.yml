@@ -1,17 +1,15 @@
 
 server:
-  port: 80
+  port: 8080
 
 spring:
   datasource:
-    #url: jdbc:h2:file:./database
-    #driverClassName: org.h2.Driver
-    #username: sa
-    #password: password
     url: jdbc:postgresql://185.201.28.190:5432/
     driverClassName: org.postgresql.Driver
     username:
     password:
+  jpa:
+    open-in-view: false
 
 gpt:
   token:
@@ -25,7 +23,7 @@ gpt:
       4 - The Russian translation of the generated sentence with the translated word enclosed in the tags <b> and </b>
     chat: |
       My message: '%s'. Provide the answer in 3 lines:
-      1 - Estimate the grammar in my message from 1 to 10 (where 1 - the is no sense in the sentence, 5 - you can understand it, but the grammar is poor, 10 - the grammar is perfect),
+      1 - Estimate the grammar of my message from 1 to 10,
       2 - The answer to my message, as if we were having a dialog,
-      3 - The correction of my message to make it better (only the sentence after correction without other words),
+      3 - The grammar correction of my message if it's wrong,
       4 - The perfect correction of my message, as a native speaker would say

@@ -1,8 +1,6 @@
 package vocabulary.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import vocabulary.entity.enums.CardStatus;
 
@@ -10,7 +8,6 @@ import java.time.LocalDateTime;
 import java.util.Random;
 
 import static jakarta.persistence.EnumType.STRING;
-import static java.time.temporal.ChronoField.MILLI_OF_DAY;
 import static vocabulary.entity.enums.CardStatus.LEARNING;
 
 @Entity(name = "cards")
@@ -22,6 +19,7 @@ import static vocabulary.entity.enums.CardStatus.LEARNING;
 @Builder
 public class Card {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
     private String word;
@@ -40,7 +38,7 @@ public class Card {
     public static Card create(String username, String word) {
         LocalDateTime now = LocalDateTime.now();
         return Card.builder()
-                .id(LocalDateTime.now().getLong(MILLI_OF_DAY))
+                .id(null)
                 .username(username)
                 .word(word)
                 .status(LEARNING)

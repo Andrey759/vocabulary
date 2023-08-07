@@ -79,6 +79,19 @@ public class DiffService {
         if (isEmpty(rm) && isEmpty(ins)) {
             return "";
         }
+        String commonCenter = commonCenter(rm, ins);
+        if (commonCenter.length() >= 2) {
+            rm = rm.substring(0, rm.length() - commonCenter.length());
+            ins = ins.substring(commonCenter.length());
+            return (rm.startsWith(" ") ? " " : "")
+                    + (isNotEmpty(rm) ? (asList(".", "?", "!").contains(rm.trim()) ? rm.trim() : FORMAT_RM.apply(rm.trim())) : "")
+                    + (rm.endsWith(" ") ? " " : "")
+                    + commonCenter
+                    + (ins.startsWith(" ") ? " " : "")
+                    + (isNotEmpty(ins) ? (asList(".", "?", "!").contains(ins.trim()) ? ins.trim() : FORMAT_INS.apply(ins.trim())) : "")
+                    + (ins.endsWith(" ") ? " " : "");
+        }
+
         int commonCharsInTheBeginning = commonCharsInTheBeginning(rm, ins);
         int commonCharsInTheEnding = commonCharsInTheEnding(rm, ins);
         String commonBeginning = rm.substring(0, commonCharsInTheBeginning);
@@ -96,6 +109,16 @@ public class DiffService {
                 + (isNotEmpty(rmPart) && isNotEmpty(insPart) && commonCharsInTheBeginning == 0 && commonCharsInTheEnding == 0 ? " " : "")
                 + (isNotEmpty(insPart) ? (asList(".", "?", "!").contains(insPart) ? insPart : FORMAT_INS.apply(insPart)) : "")
                 + commonEnding;
+    }
+
+    private String commonCenter(String rm, String ins) {
+        for (int i = 0; i < rm.length() - 1; i++) {
+            String common = rm.substring(i);
+            if (ins.startsWith(common)) {
+                return common;
+            }
+        }
+        return "";
     }
 
     private int commonCharsInTheBeginning(String rm, String ins) {

@@ -32,6 +32,7 @@ CREATE TABLE message (
     username VARCHAR(50),
     owner VARCHAR(50),
     mark INT,
+    message VARCHAR(1000),
     response VARCHAR,
     corrected VARCHAR(1000),
     corrected_html VARCHAR(1000),
