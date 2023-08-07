@@ -15,22 +15,26 @@
         <tr>
             <td class="w-25">
                 <div class="input-group">
-                    <input class="form-control form-select-sm bg-secondary border-secondary text-white w165 mt-1" type="password" placeholder="Old password" v-model="passwordOld"/>
+                    <input class="form-control form-select-sm bg-secondary border-secondary text-white w165 mt-1"
+                           type="password" placeholder="Old password" v-model="passwordOld"/>
                 </div>
             </td>
             <td>
                 <div class="input-group">
-                    <input class="form-control form-select-sm bg-secondary border-secondary text-white w165 mt-1" type="password" placeholder="New password" v-model="passwordNew"/>
+                    <input class="form-control form-select-sm bg-secondary border-secondary text-white w165 mt-1"
+                           type="password" placeholder="New password" v-model="passwordNew"/>
                 </div>
             </td>
             <td>
                 <div class="input-group">
-                    <input class="form-control form-select-sm bg-secondary border-secondary text-white w165 mt-1" type="password" placeholder="Repeat new password" v-model="passwordConfirm"/>
+                    <input class="form-control form-select-sm bg-secondary border-secondary text-white w165 mt-1"
+                           type="password" placeholder="Repeat new password" v-model="passwordConfirm" v-on:keyup.enter="changePassword"/>
                 </div>
             </td>
             <td>
-                <button class="btn btn-success text-white ml-3" v-on:click="changePassword()"><i class="bi bi-pencil"></i></button>
-                <span class="h2 position-right fw-bold" :class="{ 'text-success': passwordResult, 'text-danger': passwordResult === false }"
+                <button class="btn btn-success text-white ml-3" v-on:click="changePassword"><i class="bi bi-pencil"></i></button>
+                <span class="h2 position-right fw-bold"
+                      :class="{ 'text-success': passwordResult, 'text-danger': passwordResult === false }"
                       v-text="passwordResult === true ? '✓' : passwordResult === false ? '✘' : ''"></span>
             </td>
         </tr>

@@ -9,19 +9,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.util.StringUtils;
-import vocabulary.controller.dto.CardDto;
 import vocabulary.entity.Card;
 import vocabulary.entity.Message;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import static java.time.temporal.ChronoField.MILLI_OF_DAY;
-import static vocabulary.controller.enums.MessageOwner.BOT;
-import static vocabulary.controller.enums.MessageOwner.USER;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -44,50 +37,25 @@ public class ChatGptService {
         log.info("gpt.message: {}", gptMessageCard);
     }
 
+    // https://platform.openai.com/docs/models/model-endpoint-compatibility
     public Card sendAndParseCard(Card card) {
-        CardDto dto = sendAndParseCard(card.getUsername(), card.getWord());
-        card.setResponse(dto.getResponse());
-        card.setSentence(dto.getSentence());
-        card.setSentenceHtml(dto.getSentenceHtml());
-        card.setExplanationHtml(dto.getExplanationHtml());
-        card.setTranslationHtml(dto.getTranslationHtml());
+        String request = String.format(gptMessageCard, card.getWord());
+        String response = receive(card.getUsername(), request);
+
+        log.info("Word: {} Response:\n{}", card.getWord(), response);
+
+        card.setResponse(response);
+        parsingService.parseAndFillCard(card);
         return card;
     }
 
-    // https://platform.openai.com/docs/models/model-endpoint-compatibility
-    public CardDto sendAndParseCard(String username, String word) {
-        if (StringUtils.isEmpty(word)) {
-            return CardDto.EMPTY;
-        }
-        String request = String.format(gptMessageCard, word);
-        String response = receive(username, request);
-
-        log.info("Word: {} Response:\n{}", word, response);
-
-        return parsingService.parseCardDto(word, response);
-    }
-
     public List<Message> sendAndParseMessage(String username, String newMessage) {
-        if (StringUtils.isEmpty(newMessage)) {
-            return Collections.emptyList();
-        }
         String request = String.format(gptMessageChat, newMessage);
         String response = receive(username, request);
 
         log.info("New message: {} Response:\n{}", newMessage, response);
 
         return parsingService.parseMessages(username, response);
-    }
-
-    private List<String> receiveLines(String username, String message) {
-        return Arrays.stream(receive(username, message).split("\n"))
-                .map(str -> str.matches("^[0-9] -.+") ? str.substring(4) : str)
-                .map(str -> str.matches("^[0-9]-.+") ? str.substring(4) : str)
-                .map(str -> str.contains(":") ? str.substring(str.indexOf(":")) : str)
-                .map(str -> str.replaceAll("\"", ""))
-                .map(str -> str.replaceAll("'", ""))
-                .map(String::trim)
-                .toList();
     }
     private String receive(String username, String message) {
         ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
@@ -108,5 +76,19 @@ public class ChatGptService {
 
         log.info("ChatGPT response:\n{}", response);
         return response;
+    }
+
+    private static final Pattern INVALID_TRANSLATION_PATTERN = Pattern.compile("<b>[A-z0-9-' ]+</b>");
+    private boolean isValidCardResponse(String response) {
+        List<String> lines = parsingService.receiveLines(response);
+        String sentenceHtml = lines.get(1);
+        String translationHtml = lines.get(3);
+        if (!sentenceHtml.contains("<b>")) {
+            return false;
+        }
+        if (!translationHtml.contains("<b>") || INVALID_TRANSLATION_PATTERN.matcher(translationHtml).find()) {
+            return false;
+        }
+        return true;
     }
 }

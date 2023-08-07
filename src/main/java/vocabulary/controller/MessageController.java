@@ -13,6 +13,7 @@ import vocabulary.service.MessageService;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,6 +34,9 @@ public class MessageController {
     @PostMapping("/api/chat")
     public ResponseEntity<List<Message>> postChat(Principal principal, @RequestBody String newMessage) {
         log.info("[{}] POST /api/chat {}", principal.getName(), newMessage);
+        if (newMessage == null || newMessage.length() < 2) {
+            throw new RuntimeException("Message must not be empty");
+        }
         List<Message> messages = messageService.saveAndGetAll(principal.getName(), newMessage);
         return ResponseEntity.ok(messages);
     }

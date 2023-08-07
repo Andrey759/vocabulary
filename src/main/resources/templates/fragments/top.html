@@ -2,7 +2,7 @@
 <div class="row" id="top-panel">
     <div class="col input-group">
         <input type="text" class="form-control rounded-left mt-1px"
-               placeholder="Add new word..." v-model="word" :disabled="!enabled"/>
+               placeholder="Add new word..." v-model="word" :disabled="!enabled" v-on:keyup.enter="add"/>
         <button class="btn btn-lg btn-success rounded-right" v-on:click="add">
             <i class="bi bi-pencil text-white"></i>
         </button>

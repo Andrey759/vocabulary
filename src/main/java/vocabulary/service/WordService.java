@@ -91,8 +91,8 @@ public class WordService {
     }
 
 
-    private CardDto getCardDtoToRepeat(String username) {
-        return wordRepository.findByUsernameAndReadyAtLessThanOrderByRepeatOrderAsc(username, LocalDateTime.now())
+    public CardDto getCardDtoToRepeat(String username) {
+        return wordRepository.findByUsernameAndSentenceNotNullAndReadyAtLessThanOrderByRepeatOrderAsc(username, LocalDateTime.now())
                 .stream()
                 .findFirst()
                 .map(CardDto::from)

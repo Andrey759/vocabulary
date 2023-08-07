@@ -7,6 +7,8 @@ var card = new Vue({
         sentenceHtml: 'Loading...',
         explanationHtml: '',
         translationHtml: '',
+        nextStatus: '',
+        buttonsEnabled: true,
         explanationVisible: false,
         translationVisible: false,
         playing: false
@@ -19,24 +21,17 @@ var card = new Vue({
             this.translationVisible = !this.translationVisible;
         },
         loadWithoutAutoplay() {
-            this.clearFields();
-            fetch('/api/next/' + this.word)
+            fetch('/api/word')
                 .then(response => log(response))
                 .then(response => response.json())
                 .then(this.handleResponse)
-                .catch(handleError);
-        },
-        update() {
-            this.clearFields();
-            fetch('/api/next/' + this.word)
-                .then(response => log(response))
-                .then(response => response.json())
-                .then(this.handleResponse)
-                .then(speakCardAuto)
                 .catch(handleError);
         },
         reset() {
-            fetch('/api/reset/' + this.word)
+            fetch('/api/word/reset', {
+                method: 'POST',
+                body: this.word
+            })
                 .then(response => log(response))
                 .then(response => response.json())
                 .then(this.handleResponse)
@@ -45,26 +40,35 @@ var card = new Vue({
                 .catch(handleError);
         },
         another() {
-            this.clearFields();
-            fetch('/api/another/' + this.word)
+            this.clearFieldsAndSetLoading();
+            fetch('/api/word/another', {
+                method: 'POST',
+                body: this.word
+            })
                 .then(response => response.json())
                 .then(this.handleResponse)
                 .then(speakCardAuto)
                 .catch(handleError);
         },
         next() {
-            fetch('/api/next/' + this.word)
+            fetch('/api/word/next', {
+                method: 'POST',
+                body: this.word
+            })
                 .then(response => log(response))
                 .then(response => response.json())
                 .then(this.handleResponse)
                 .then(speakCardAuto)
+                .then(() => dict.update())
                 .catch(handleError);
         },
-        clearFields() {
+        clearFieldsAndSetLoading() {
             this.sentence = '';
             this.sentenceHtml = 'Loading...';
             this.explanationHtml = '';
             this.translationHtml = '';
+            this.nextStatus = 'three days';
+            this.buttonsEnabled = false;
             this.explanationVisible = false;
             this.translationVisible = false;
             this.playing = false;
@@ -73,7 +77,15 @@ var card = new Vue({
         handleResponse(response) {
             if (response.sentence === '') {
                 if (card.sentenceHtml !== 'No cards to repeat') {
+                    this.word = '';
+                    this.sentence = '';
                     this.sentenceHtml = 'No cards to repeat';
+                    this.explanationHtml = '';
+                    this.translationHtml = '';
+                    this.nextStatus = 'three days';
+                    this.buttonsEnabled = false;
+                    this.explanationVisible = false;
+                    this.translationVisible = false;
                 }
                 setTimeout(() => card.loadWithoutAutoplay(), 2000);
             } else {
@@ -82,6 +94,8 @@ var card = new Vue({
                 this.sentenceHtml = response.sentenceHtml;
                 this.explanationHtml = response.explanationHtml;
                 this.translationHtml = response.translationHtml;
+                this.nextStatus = response.nextStatus.replaceAll('_', ' ').toLowerCase();
+                setTimeout(() => this.buttonsEnabled = true, 1000);
                 this.explanationVisible = false;
                 this.translationVisible = false;
             }
@@ -102,6 +116,7 @@ var card = new Vue({
         responsiveVoice.speak('');
         //setTimeout(() => { responsiveVoice.allowSpeechClicked(true); }, 300);
         setTimeout(() => { responsiveVoice.allowSpeechClicked(true); }, 1000);
+        this.clearFieldsAndSetLoading();
         this.loadWithoutAutoplay();
     }
 });

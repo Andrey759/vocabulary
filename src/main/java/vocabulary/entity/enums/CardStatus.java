@@ -22,8 +22,11 @@ public enum CardStatus {
     private final Function<LocalDateTime, LocalDateTime> func;
 
     public CardStatus nextStatus() {
-        int index = Arrays.asList(values()).indexOf(this);
-        return values()[index + 1];
+        CardStatus[] values = values();
+        int index = Arrays.asList(values).indexOf(this);
+        return index == values.length - 1
+                ? values[index]
+                : values[index + 1];
     }
     public LocalDateTime readyAt(LocalDateTime updatedAt) {
         return func.apply(updatedAt);

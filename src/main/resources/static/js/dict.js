@@ -34,6 +34,7 @@ var dict = new Vue({
                 .then(() => {
                     this.cards = this.cards.filter(card => card.word !== word);
                     if (word === card.word) {
+                        card.clearFieldsAndSetLoading();
                         card.loadWithoutAutoplay();
                     }
                 })

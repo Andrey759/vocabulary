@@ -2,7 +2,7 @@ package vocabulary.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vocabulary.controller.dto.CardDto;
+import vocabulary.entity.Card;
 import vocabulary.entity.Message;
 
 import java.time.LocalDateTime;
@@ -18,8 +18,8 @@ import static vocabulary.controller.enums.MessageOwner.USER;
 public class ParsingService {
     private final DiffService diffService;
 
-    public CardDto parseCardDto(String word, String response) {
-        List<String> lines = receiveLines(response.replaceAll("\n\n", "\n"));
+    public Card parseAndFillCard(Card card) {
+        List<String> lines = receiveLines(card.getResponse());
 
         String sentence = lines.get(0);
         String sentenceHtml = lines.get(1);
@@ -30,18 +30,15 @@ public class ParsingService {
             explanationHtml = explanationHtml.substring(0, 1).toUpperCase() + explanationHtml.substring(1);
         }
 
-        return new CardDto(
-                word,
-                response,
-                sentence,
-                sentenceHtml,
-                explanationHtml,
-                translationHtml
-        );
+        card.setSentence(sentence);
+        card.setSentenceHtml(sentenceHtml);
+        card.setExplanationHtml(explanationHtml);
+        card.setTranslationHtml(translationHtml);
+        return card;
     }
 
     public List<Message> parseMessages(String username, String response) {
-        List<String> lines = receiveLines(response.replaceAll("\n\n", "\n"));
+        List<String> lines = receiveLines(response);
 
         int mark = Integer.parseInt(lines.get(0).split("/")[0].replaceAll("\\D+", ""));
         if (mark > 10) {
@@ -78,8 +75,8 @@ public class ParsingService {
         return List.of(userMessageDto, botMessageDto);
     }
 
-    private List<String> receiveLines(String source) {
-        return Arrays.stream(source.split("\n"))
+    public List<String> receiveLines(String response) {
+        return Arrays.stream(response.split("\n"))
                 .map(str -> str.matches("^[0-9] -.+") ? str.substring(3) : str)
                 .map(str -> str.matches("^[0-9]-.+") ? str.substring(2) : str)
                 .map(str -> str.matches("^[0-9]\\..+") ? str.substring(2) : str)

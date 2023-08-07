@@ -43,15 +43,10 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/css/**", "/js/**");
-    }
-
-    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService, JdbcTokenRepositoryImpl tokenRepository) throws Exception {
         return http
                 .authorizeHttpRequests(c -> c
-                        .requestMatchers("/register").permitAll()
+                        .requestMatchers("/register", "/css/**", "/js/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(c -> c

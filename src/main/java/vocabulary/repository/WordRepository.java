@@ -13,7 +13,7 @@ public interface WordRepository extends JpaRepository<Card, Long> {
 
     List<Card> findAllBySentenceIsNull();
     Optional<Card> findByUsernameAndWord(String username, String word);
-    List<Card> findByUsernameAndReadyAtLessThanOrderByRepeatOrderAsc(String username, LocalDateTime readyAt);
+    List<Card> findByUsernameAndSentenceNotNullAndReadyAtLessThanOrderByRepeatOrderAsc(String username, LocalDateTime readyAt);
     List<Card> findAllByUsername(String username);
     Integer deleteByUsernameAndWord(String username, String word);
 }

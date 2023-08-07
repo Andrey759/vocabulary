@@ -13,13 +13,13 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 </head>
 <body class="bg-dark p-4">
-    <div th:replace="fragments/top"></div>
+    <div th:replace="~{fragments/top}"></div>
 
     <div class="tab-content" id="nav-tabContent" style="margin-bottom: 10%">
-        <div th:replace="fragments/card"></div>
-        <div th:replace="fragments/chat"></div>
-        <div th:replace="fragments/dict"></div>
-        <div th:replace="fragments/settings"></div>
+        <div th:replace="~{fragments/card}"></div>
+        <div th:replace="~{fragments/chat}"></div>
+        <div th:replace="~{fragments/dict}"></div>
+        <div th:replace="~{fragments/settings}"></div>
     </div>
 
     <script th:src="@{/js/common.js}"></script>

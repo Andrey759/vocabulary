@@ -1,6 +1,6 @@
 
 <div class="tab-pane fade show active mt-5" id="nav-repeat" role="tabpanel" aria-labelledby="nav-repeat-tab">
-    <div class="card content m-auto" style="width: 36rem" id="card">
+    <div class="card content m-auto" style="width: 37rem" id="card">
         <!--<img src="..." class="card-img-top" alt="...">-->
         <div class="d-none">{{ word }}</div>
         <div class="d-none">{{ sentence }}</div>
@@ -18,9 +18,9 @@
             <p></p>
         </div>
         <div class="btn-group">
-            <button class="btn btn-teal-blue" v-on:click="reset">I forgot</button>
-            <button class="btn btn-teal" v-on:click="another">Another context</button>
-            <button class="btn btn-teal-dark" v-on:click="next">I know</button>
+            <button class="btn btn-teal-blue" v-on:click="reset" :disabled="!buttonsEnabled">For tomorrow</button>
+            <button class="btn btn-teal" v-on:click="another" :disabled="!buttonsEnabled">Another context</button>
+            <button class="btn btn-teal-dark" v-on:click="next" v-text="'For ' + nextStatus" :disabled="!buttonsEnabled">For three days</button>
         </div>
     </div>
 </div>
