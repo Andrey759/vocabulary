@@ -50,3 +50,16 @@ jar {
 test {
     useJUnitPlatform()
 }
+
+task deploy {
+    group 'publishing'
+    dependsOn 'build'
+    doLast {
+        exec {
+            commandLine 'scp', file('build/libs/vocabulary-0.0.1.jar'), "root@185.201.28.190:/home"
+        }
+        exec {
+            commandLine 'ssh', 'root@185.201.28.190', "systemctl restart vocabulary"
+        }
+    }
+}
