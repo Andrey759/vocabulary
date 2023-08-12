@@ -2,7 +2,7 @@
 build/
 logs/
 !gradle/wrapper/gradle-wrapper.jar
-application-local.yml
+recources/application-local.yml
 
 ### IntelliJ IDEA ###
 .idea
