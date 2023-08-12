@@ -1,18 +1,18 @@
 
 server:
-  port: 8080
+  port: 80
 
 spring:
   datasource:
-    url: jdbc:postgresql://185.201.28.190:5432/
     driverClassName: org.postgresql.Driver
-    username:
-    password:
+    #url:
+    #username:
+    #password:
   jpa:
     open-in-view: false
 
 gpt:
-  token:
+  #token:
   model: gpt-3.5-turbo
   message:
     card: |
