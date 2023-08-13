@@ -1,6 +1,7 @@
 .gradle
 build/
 logs/
+prod/
 !gradle/wrapper/gradle-wrapper.jar
 application-local.yml
 application-prod.yml

@@ -56,10 +56,20 @@ task deploy {
     dependsOn 'build'
     doLast {
         exec {
+            commandLine 'ssh', 'root@185.201.28.190', "systemctl stop vocabulary"
+        }
+        exec {
             commandLine 'scp', file('build/libs/vocabulary-0.0.1.jar'), "root@185.201.28.190:/home"
         }
         exec {
-            commandLine 'ssh', 'root@185.201.28.190', "systemctl restart vocabulary"
+            commandLine 'ssh', 'root@185.201.28.190', "systemctl start vocabulary"
         }
+    }
+}
+
+task logs {
+    group 'publishing'
+    exec {
+        commandLine 'scp', 'root@185.201.28.190:/home/logs/*', 'prod/'
     }
 }
