@@ -11,7 +11,7 @@ var topPanel = new Vue({
     methods: {
         add() {
             this.enabled = false;
-            fetch('/api/word', {
+            fetch('/api/card', {
                 method: 'POST',
                 body: this.word
             })

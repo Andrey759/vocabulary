@@ -10,8 +10,6 @@ import vocabulary.entity.enums.CardStatus;
 @RequiredArgsConstructor
 @ToString
 public class CardDto {
-    public static CardDto EMPTY = new CardDto(
-            "", "", "", "", "", "", CardStatus.THREE_DAYS);
 
     private final String word;
     private final String response;
@@ -20,8 +18,10 @@ public class CardDto {
     private final String explanationHtml;
     private final String translationHtml;
     private final CardStatus nextStatus;
+    private final Long finishedToday;
+    private final Long totalElements;
 
-    public static CardDto from(Card card) {
+    public static CardDto from(Card card, Long finishedToday, Long totalElements) {
         return new CardDto(
                 card.getWord(),
                 card.getResponse(),
@@ -29,7 +29,23 @@ public class CardDto {
                 card.getSentenceHtml(),
                 card.getExplanationHtml(),
                 card.getTranslationHtml(),
-                card.getStatus().nextStatus()
+                card.getStatus().nextStatus(),
+                finishedToday,
+                totalElements
+        );
+    }
+
+    public static CardDto empty(Long finishedToday, Long totalElements) {
+        return new CardDto(
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                CardStatus.THREE_DAYS,
+                finishedToday,
+                totalElements
         );
     }
 }

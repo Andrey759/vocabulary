@@ -1,10 +1,16 @@
 
 <div class="tab-pane fade mt-5" id="nav-dict" role="tabpanel" aria-labelledby="nav-dict-tab">
-    <table class="table table-dark m-auto" id="dict" style="width: 36rem">
-        <tr v-for="card in cards">
-            <td>{{ card.word }}</td>
-            <td class="form-select-sm">
-                <select class="form-select form-select-sm bg-secondary border-secondary text-white" data-style="btn-secondary" v-model="card.status" @change="change(card.word, card.status)">
+    <table class="table table-dark m-auto" id="dict" style="width: 40rem">
+        <tr v-for="(dictDto, index) in elements">
+
+            <td class="w32 pt11" :class="{ 'bg-dark-green': dictDto.ready }">{{ (index + 1) + '.'}}</td>
+
+            <td class="pt11" :class="{ 'bg-dark-green': dictDto.ready }">{{ dictDto.word }}</td>
+
+            <td class="form-select-sm pt11" :class="{ 'bg-dark-green': dictDto.ready }">
+                <select class="form-select form-select-sm bg-secondary border-secondary text-white"
+                        data-style="btn-secondary" v-model="dictDto.status" @change="change(dictDto.word, dictDto.status)">
+
                     <option value="LEARNING">Learning</option>
                     <option value="THREE_DAYS">Three days</option>
                     <option value="ONE_WEEK">One week</option>
@@ -16,8 +22,10 @@
                     <option value="INFINITY">Don't repeat</option>
                 </select>
             </td>
-            <td class="w32">
-                <button class="btn btn-sm btn-rd text-white" v-on:click="deleteWord(card.word)"><i class="bi bi-x-lg"></i></button>
+            <td class="w32" :class="{ 'bg-dark-green': dictDto.ready }">
+                <button class="btn btn-sm btn-outline-danger" v-on:click="deleteWord(dictDto.word)">
+                    <i class="bi bi-x-lg"></i>
+                </button>
             </td>
         </tr>
     </table>

@@ -5,98 +5,103 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vocabulary.controller.dto.CardDto;
+import vocabulary.controller.dto.DictDto;
 import vocabulary.entity.Card;
 import vocabulary.entity.enums.CardStatus;
-import vocabulary.repository.WordRepository;
+import vocabulary.repository.CardRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static vocabulary.controller.dto.CardDto.EMPTY;
 import static vocabulary.entity.enums.CardStatus.LEARNING;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class WordService {
-    private final WordRepository wordRepository;
+public class CardService {
+    private final CardRepository cardRepository;
     private final ChatGptService chatGptService;
 
     @Transactional
     public void updateAllEmptyFromChatGpt() {
-        wordRepository.findAllBySentenceIsNull()
+        cardRepository.findAllBySentenceIsNull()
                 .forEach(chatGptService::sendAndParseCard);
     }
 
     @Transactional
     public boolean addOrReset(String username, String word) {
-        Optional<Card> cardOptional = wordRepository.findByUsernameAndWord(username, word);
+        Optional<Card> cardOptional = cardRepository.findByUsernameAndWord(username, word);
         if (cardOptional.isPresent()) {
             Card card = cardOptional.get();
             card.setStatus(LEARNING);
             card.setReadyAt(LocalDateTime.now());
-            wordRepository.save(card);
+            cardRepository.save(card);
             return false;
         }
-        wordRepository.save(Card.create(username, word));
+        cardRepository.save(Card.create(username, word));
         return true;
     }
 
     @Transactional
-    public Integer delete(String username, String word) {
-        return wordRepository.deleteByUsernameAndWord(username, word);
+    public CardDto deleteAndGetCardDto(String username, String word) {
+        cardRepository.deleteByUsernameAndWord(username, word);
+        return getCardDtoToRepeat(username);
     }
 
     @Transactional
     public CardDto reset(String username, String word) {
-        wordRepository.findByUsernameAndWord(username, word)
+        cardRepository.findByUsernameAndWord(username, word)
                 .map(this::fillFieldsForReset)
-                .map(wordRepository::save);
+                .map(cardRepository::save);
         return getCardDtoToRepeat(username);
     }
 
     @Transactional
     public CardDto another(String username, String word) {
-        return wordRepository.findByUsernameAndWord(username, word)
+        return cardRepository.findByUsernameAndWord(username, word)
                 .map(chatGptService::sendAndParseCard)
-                .map(wordRepository::save)
-                .map(CardDto::from)
-                .orElse(EMPTY);
+                .map(cardRepository::save)
+                .map(card -> CardDto.from(card, null, null))
+                .orElse(CardDto.empty(null, null));
     }
 
     @Transactional
     public CardDto next(String username, String word) {
-        wordRepository.findByUsernameAndWord(username, word)
+        cardRepository.findByUsernameAndWord(username, word)
                 .map(this::fillFieldsForNextStatus)
-                .map(wordRepository::save);
+                .map(cardRepository::save);
         return getCardDtoToRepeat(username);
     }
 
     @Transactional(readOnly = true)
-    public List<Card> findAll(String username) {
-        return wordRepository.findAllByUsername(username);
+    public List<DictDto> findAll(String username) {
+        return cardRepository.findAllByUsernameOrderByCreatedAtAsc(username)
+                .stream()
+                .map(DictDto::from)
+                .toList();
     }
 
     @Transactional
     public CardDto changeStatusAndGetCardDto(String username, String word, CardStatus status) {
-        wordRepository.findByUsernameAndWord(username, word)
+        cardRepository.findByUsernameAndWord(username, word)
                 .map(card -> {
                     card.setStatus(status);
                     card.setReadyAt(status.readyAt(card.getUpdatedAt()));
                     return card;
                 })
-                .ifPresent(wordRepository::save);
+                .ifPresent(cardRepository::save);
         return getCardDtoToRepeat(username);
     }
 
 
     public CardDto getCardDtoToRepeat(String username) {
-        return wordRepository.findByUsernameAndSentenceNotNullAndReadyAtLessThanOrderByRepeatOrderAsc(username, LocalDateTime.now())
-                .stream()
-                .findFirst()
-                .map(CardDto::from)
-                .orElse(EMPTY);
+        Card card = cardRepository.findCardToRepeat(username, LocalDateTime.now());
+        Long finishedToday = cardRepository.countByUsernameAndUpdatedAtGreaterThanAndUpdatedAtLessThan(
+                username, LocalDateTime.now().minusHours(10L), LocalDateTime.now());
+        Long totalElements = cardRepository.countCardsToRepeat(username, LocalDateTime.now());
+        totalElements += finishedToday;
+        return CardDto.from(card, finishedToday, totalElements);
     }
 
     private Card fillFieldsForReset(Card card) {

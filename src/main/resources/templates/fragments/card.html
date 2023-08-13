@@ -6,8 +6,8 @@
         <div class="d-none">{{ sentence }}</div>
         <div class="card-body">
             <div class="d-none"><p class="text-muted">1 / 50</p></div>
-            <!--<h5 class="card-title fw-bold">Card title</h5>-->
-            <i class="btn btn-lg bi bi-play-circle" style="display: inline" :class="{ 'bi-stop-circle': playing }" v-on:click="speak"></i>
+            <h5 class="card-title fw-bold gray" v-text="finishedToday + ' / ' + totalElements"></h5>
+            <i class="btn btn-lg btn-left-play bi bi-play-circle" style="display: inline" :class="{ 'bi-stop-circle': playing }" v-on:click="speak"></i>
             <p class="card-text" style="display: inline" v-html="sentenceHtml"></p>
             <div class="card-left disable-select" v-on:click="explanationClick" :class="{ 'dimgray': !explanationVisible }">
                 <p v-html="explanationVisible ? explanationHtml : 'Explanation</br>Click to see'"></p>

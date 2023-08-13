@@ -8,6 +8,8 @@ var card = new Vue({
         explanationHtml: '',
         translationHtml: '',
         nextStatus: '',
+        finishedToday: 0,
+        totalElements: 0,
         buttonsEnabled: true,
         explanationVisible: false,
         translationVisible: false,
@@ -21,14 +23,14 @@ var card = new Vue({
             this.translationVisible = !this.translationVisible;
         },
         loadWithoutAutoplay() {
-            fetch('/api/word')
+            fetch('/api/card')
                 .then(response => log(response))
                 .then(response => response.json())
                 .then(this.handleResponse)
                 .catch(handleError);
         },
         reset() {
-            fetch('/api/word/reset', {
+            fetch('/api/card/reset', {
                 method: 'POST',
                 body: this.word
             })
@@ -41,7 +43,7 @@ var card = new Vue({
         },
         another() {
             this.clearFieldsAndSetLoading();
-            fetch('/api/word/another', {
+            fetch('/api/card/another', {
                 method: 'POST',
                 body: this.word
             })
@@ -51,7 +53,7 @@ var card = new Vue({
                 .catch(handleError);
         },
         next() {
-            fetch('/api/word/next', {
+            fetch('/api/card/next', {
                 method: 'POST',
                 body: this.word
             })
@@ -95,6 +97,12 @@ var card = new Vue({
                 this.explanationHtml = response.explanationHtml;
                 this.translationHtml = response.translationHtml;
                 this.nextStatus = response.nextStatus.replaceAll('_', ' ').toLowerCase();
+                if (response.finishedToday !== null) {
+                    this.finishedToday = response.finishedToday;
+                }
+                if (response.totalElements !== null) {
+                    this.totalElements = response.totalElements;
+                }
                 setTimeout(() => this.buttonsEnabled = true, 1000);
                 this.explanationVisible = false;
                 this.translationVisible = false;
