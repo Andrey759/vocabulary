@@ -12,7 +12,6 @@ import vocabulary.entity.enums.CardStatus;
 public class CardDto {
 
     private final String word;
-    private final String response;
     private final String sentence;
     private final String sentenceHtml;
     private final String explanationHtml;
@@ -24,7 +23,6 @@ public class CardDto {
     public static CardDto from(Card card, Long finishedToday, Long totalElements) {
         return new CardDto(
                 card.getWord(),
-                card.getResponse(),
                 card.getSentence(),
                 card.getSentenceHtml(),
                 card.getExplanationHtml(),
@@ -39,8 +37,7 @@ public class CardDto {
         return new CardDto(
                 "",
                 "",
-                "",
-                "",
+                "No cards to repeat",
                 "",
                 "",
                 CardStatus.THREE_DAYS,

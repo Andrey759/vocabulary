@@ -19,9 +19,10 @@ import vocabulary.service.dto.DiffDto;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static io.micrometer.common.util.StringUtils.isEmpty;
 import static io.micrometer.common.util.StringUtils.isNotEmpty;
@@ -37,6 +38,10 @@ public class DiffService {
 
     public String calculateCorrectedHtml(String source, String corrected) {
         DiffDto diff = execute(source, corrected);
+        if (diff == null) {
+            log.info("Emails for diffchecker.com are over");
+            return corrected;
+        }
         List<ChunkDto> leftChunks = diff.getRows().get(0).getLeft().getChunks();
         List<ChunkDto> rightChunks = diff.getRows().get(0).getRight().getChunks();
 
@@ -141,9 +146,23 @@ public class DiffService {
         return min;
     }
 
-    @SneakyThrows
+    private final List<String> EMAIL_LIST = IntStream.range(0, 100)
+            .mapToObj(i -> String.format("test%d@mail.ru", i)).toList();
+    public final AtomicInteger INDEX = new AtomicInteger(0);
     private DiffDto execute(String left, String right) {
-        HttpPost httpPost = new HttpPost("https://api.diffchecker.com/public/text?output_type=json&email=arebrov89@gmail.com");
+        DiffDto result;
+        while ((result = executeForEmail(left, right, EMAIL_LIST.get(INDEX.get()))) == null && INDEX.get() < EMAIL_LIST.size() - 1) {
+            INDEX.incrementAndGet();
+            log.info("Email for diffchecker.com changed to {}", EMAIL_LIST.get(INDEX.get()));
+        }
+        return result;
+    }
+
+    @SneakyThrows
+    private DiffDto executeForEmail(String left, String right, String email) {
+        // TODO: email list
+        // arebrov89@gmail.com
+        HttpPost httpPost = new HttpPost("https://api.diffchecker.com/public/text?output_type=json&email=" + email);
         //httpPost.addHeader("User-Agent", "");
 
         //List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
@@ -157,11 +176,9 @@ public class DiffService {
         ) {
             String content = EntityUtils.toString(response.getEntity());
             log.info(content);
-            return OBJECT_MAPPER.readValue(content, DiffDto.class);
+            return content.contains("FREE_DIFF_LIMIT_EXCEEDED")
+                    ? null
+                    : OBJECT_MAPPER.readValue(content, DiffDto.class);
         }
-    }
-
-    String calculateCorrectedHtml(String source, DiffDto diff) {
-        return null;
     }
 }

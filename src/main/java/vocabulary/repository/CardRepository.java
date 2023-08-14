@@ -18,7 +18,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
             "WHERE username = ?1 AND ready_at <= ?2 AND sentence IS NOT NULL " +
             "ORDER BY created_at LIMIT 1",
             nativeQuery = true)
-    Card findCardToRepeat(String username, LocalDateTime readyAt);
+    Optional<Card> findCardToRepeat(String username, LocalDateTime readyAt);
     long countByUsernameAndUpdatedAtGreaterThanAndUpdatedAtLessThan(
             String username, LocalDateTime updatedAtFrom, LocalDateTime updatedAtTo);
     @Query(value = "SELECT COUNT(*) FROM cards " +

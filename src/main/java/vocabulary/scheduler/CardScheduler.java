@@ -9,11 +9,11 @@ import vocabulary.service.CardService;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class WordScheduler {
-    private final CardService wordService;
+public class CardScheduler {
+    private final CardService cardService;
 
     @Scheduled(cron = "*/2 * * * * *")
     public void updateAllEmptyFromChatGpt() {
-        wordService.updateAllEmptyFromChatGpt();
+        cardService.updateAllEmptyFromChatGpt();
     }
 }

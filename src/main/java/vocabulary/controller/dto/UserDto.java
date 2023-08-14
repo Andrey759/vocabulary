@@ -9,8 +9,7 @@ import vocabulary.entity.enums.Voice;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import static vocabulary.entity.enums.Voice.UK_ENGLISH_FEMALE;
-import static vocabulary.entity.enums.Voice.UK_ENGLISH_MALE;
+import static vocabulary.entity.enums.Voice.*;
 
 @Getter
 @RequiredArgsConstructor
@@ -39,10 +38,10 @@ public class UserDto {
         return new UserDto(
                 user.getUsername(),
                 Optional.ofNullable(user.getVoiceEnabled()).orElse(true),
-                Optional.ofNullable(user.getVoiceCard()).orElse(UK_ENGLISH_MALE),
+                Optional.ofNullable(user.getVoiceCard()).orElse(RANDOM),
                 Optional.ofNullable(user.getVoiceChatLeft()).orElse(UK_ENGLISH_FEMALE),
                 Optional.ofNullable(user.getVoiceChatRight()).orElse(UK_ENGLISH_MALE),
-                Optional.ofNullable(user.getVoiceRate()).orElse(new BigDecimal("0.8")),
+                Optional.ofNullable(user.getVoiceRate()).orElse(new BigDecimal("1.0")),
                 Optional.ofNullable(user.getVoiceVolume()).orElse(new BigDecimal("1.0"))
         );
     }

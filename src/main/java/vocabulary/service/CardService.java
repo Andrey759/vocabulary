@@ -96,12 +96,14 @@ public class CardService {
 
 
     public CardDto getCardDtoToRepeat(String username) {
-        Card card = cardRepository.findCardToRepeat(username, LocalDateTime.now());
-        Long finishedToday = cardRepository.countByUsernameAndUpdatedAtGreaterThanAndUpdatedAtLessThan(
+        Optional<Card> cardOptional = cardRepository.findCardToRepeat(username, LocalDateTime.now());
+        long finishedToday = cardRepository.countByUsernameAndUpdatedAtGreaterThanAndUpdatedAtLessThan(
                 username, LocalDateTime.now().minusHours(10L), LocalDateTime.now());
-        Long totalElements = cardRepository.countCardsToRepeat(username, LocalDateTime.now());
-        totalElements += finishedToday;
-        return CardDto.from(card, finishedToday, totalElements);
+        long toRepeat = cardRepository.countCardsToRepeat(username, LocalDateTime.now());
+        long totalElements = finishedToday + toRepeat;
+        return cardOptional
+                .map(card -> CardDto.from(card, finishedToday, totalElements))
+                .orElse(CardDto.empty(finishedToday, totalElements));
     }
 
     private Card fillFieldsForReset(Card card) {

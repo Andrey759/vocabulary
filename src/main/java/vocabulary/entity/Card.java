@@ -43,7 +43,7 @@ public class Card {
                 .word(word)
                 .status(LEARNING)
                 .createdAt(now)
-                .updatedAt(now)
+                .updatedAt(null)
                 .readyAt(now)
                 .repeatOrder(new Random().nextInt(1000))
                 .build();

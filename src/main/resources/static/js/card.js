@@ -77,20 +77,8 @@ var card = new Vue({
             responsiveVoice.cancel();
         },
         handleResponse(response) {
-            if (response.sentence === '') {
-                if (card.sentenceHtml !== 'No cards to repeat') {
-                    this.word = '';
-                    this.sentence = '';
-                    this.sentenceHtml = 'No cards to repeat';
-                    this.explanationHtml = '';
-                    this.translationHtml = '';
-                    this.nextStatus = 'three days';
-                    this.buttonsEnabled = false;
-                    this.explanationVisible = false;
-                    this.translationVisible = false;
-                }
-                setTimeout(() => card.loadWithoutAutoplay(), 2000);
-            } else {
+            // Otherwise the picture would blink after each scheduled reloading
+            if (card.sentenceHtml !== 'No cards to repeat' || response.sentenceHtml !== 'No cards to repeat') {
                 this.word = response.word;
                 this.sentence = response.sentence;
                 this.sentenceHtml = response.sentenceHtml;
@@ -103,9 +91,13 @@ var card = new Vue({
                 if (response.totalElements !== null) {
                     this.totalElements = response.totalElements;
                 }
-                setTimeout(() => this.buttonsEnabled = true, 1000);
                 this.explanationVisible = false;
                 this.translationVisible = false;
+            }
+            if (response.word === '' && response.sentenceHtml === 'No cards to repeat') {
+                setTimeout(() => card.loadWithoutAutoplay(), 2000);
+            } else {
+                setTimeout(() => this.buttonsEnabled = true, 1000);
             }
         },
         speak() {
