@@ -15,19 +15,19 @@
         <tr>
             <td class="w-25">
                 <div class="input-group">
-                    <input class="form-control form-select-sm bg-secondary border-secondary text-white w165 mt-1"
+                    <input class="form-control form-select-sm bg-dark border-secondary text-white w165 mt-1"
                            type="password" placeholder="Old password" v-model="passwordOld"/>
                 </div>
             </td>
             <td>
                 <div class="input-group">
-                    <input class="form-control form-select-sm bg-secondary border-secondary text-white w165 mt-1"
+                    <input class="form-control form-select-sm bg-dark border-secondary text-white w165 mt-1"
                            type="password" placeholder="New password" v-model="passwordNew"/>
                 </div>
             </td>
             <td>
                 <div class="input-group">
-                    <input class="form-control form-select-sm bg-secondary border-secondary text-white w165 mt-1"
+                    <input class="form-control form-select-sm bg-dark border-secondary text-white w165 mt-1"
                            type="password" placeholder="Repeat new password" v-model="passwordConfirm" v-on:keyup.enter="changePassword"/>
                 </div>
             </td>
@@ -51,7 +51,7 @@
         <tr>
             <td class="pt11">Voice for repeating words</td>
             <td class="w-25">
-                <select class="form-select form-select-sm bg-secondary border-secondary text-white w165" data-style="btn-secondary" v-model="voiceCard" @change="saveVoiceCard()">
+                <select class="form-select form-select-sm bg-dark border-secondary arrow-secondary text-white w165" data-style="btn-secondary" v-model="voiceCard" @change="saveVoiceCard()">
                     <option th:each="voice : ${T(vocabulary.entity.enums.Voice).values()}"
                             th:value="${voice.name()}"
                             th:text="#{${'voice.' + voice.name().toLowerCase()}}"></option>
@@ -61,7 +61,7 @@
         <tr>
             <td class="pt11">Voice for ChatGpt messages</td>
             <td class="w-25">
-                <select class="form-select form-select-sm bg-secondary border-secondary text-white w165" data-style="btn-secondary" v-model="voiceChatLeft" @change="saveVoiceChatLeft()">
+                <select class="form-select form-select-sm bg-dark border-secondary arrow-secondary text-white w165" data-style="btn-secondary" v-model="voiceChatLeft" @change="saveVoiceChatLeft()">
                     <option th:each="voice : ${T(vocabulary.entity.enums.Voice).values()}"
                             th:value="${voice.name()}"
                             th:text="#{${'voice.' + voice.name().toLowerCase()}}"></option>
@@ -71,7 +71,7 @@
         <tr>
             <td class="pt11">Voice for your messages</td>
             <td class="w-25">
-                <select class="form-select form-select-sm bg-secondary border-secondary text-white w165" data-style="btn-secondary" v-model="voiceChatRight" @change="saveVoiceChatRight()">
+                <select class="form-select form-select-sm bg-dark border-secondary arrow-secondary text-white w165" data-style="btn-secondary" v-model="voiceChatRight" @change="saveVoiceChatRight()">
                     <option th:each="voice : ${T(vocabulary.entity.enums.Voice).values()}"
                             th:value="${voice.name()}"
                             th:text="#{${'voice.' + voice.name().toLowerCase()}}"></option>
@@ -81,13 +81,13 @@
         <tr>
             <td class="pt11">Voice rate</td>
             <td class="w-25">
-                <input class="form-control form-select-sm bg-secondary border-secondary text-white w165" v-model="voiceRate" @change="saveVoiceRate()">
+                <input class="form-control form-select-sm bg-dark border-secondary text-white w165" v-model="voiceRate" @change="saveVoiceRate()">
             </td>
         </tr>
         <tr>
             <td class="pt11">Voice volume</td>
             <td class="w-25">
-                <input class="form-control form-select-sm bg-secondary border-secondary text-white w165" v-model="voiceVolume" @change="saveVoiceVolume()">
+                <input class="form-control form-select-sm bg-dark border-secondary text-white w165" v-model="voiceVolume" @change="saveVoiceVolume()">
             </td>
         </tr>
     </table>

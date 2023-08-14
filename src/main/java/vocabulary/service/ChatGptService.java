@@ -39,7 +39,18 @@ public class ChatGptService {
     }
 
     // https://platform.openai.com/docs/models/model-endpoint-compatibility
-    public Card sendAndParseCard(Card card) {
+    public Card sendAndParseCardWithValidation(Card card) {
+        card = sendAndParseCard(card);
+        if (!isValidCardResponse(card)) {
+            card = sendAndParseCard(card);  // The first attempt
+        }
+        if (!isValidCardResponse(card)) {
+            card = sendAndParseCard(card);  // The second attempt
+        }
+        return card;    // If two attempts didn't help, return the result as is
+    }
+
+    private Card sendAndParseCard(Card card) {
         String request = String.format(gptMessageCard, card.getWord());
         String response = receive(card.getUsername(), request);
 
@@ -80,14 +91,12 @@ public class ChatGptService {
     }
 
     private static final Pattern INVALID_TRANSLATION_PATTERN = Pattern.compile("<b>[A-z0-9-' ]+</b>");
-    private boolean isValidCardResponse(String response) {
-        List<String> lines = parsingService.receiveLines(response);
-        String sentenceHtml = lines.get(1);
-        String translationHtml = lines.get(3);
-        if (!sentenceHtml.contains("<b>")) {
+    private boolean isValidCardResponse(Card card) {
+        if (!card.getSentenceHtml().contains("<b>")) {
             return false;
         }
-        if (!translationHtml.contains("<b>") || INVALID_TRANSLATION_PATTERN.matcher(translationHtml).find()) {
+        if (!card.getTranslationHtml().contains("<b>")
+                || INVALID_TRANSLATION_PATTERN.matcher(card.getTranslationHtml()).find()) {
             return false;
         }
         return true;

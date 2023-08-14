@@ -7,8 +7,8 @@
 
             <td class="pt11" :class="{ 'bg-dark-green': dictDto.ready }">{{ dictDto.word }}</td>
 
-            <td class="form-select-sm pt11" :class="{ 'bg-dark-green': dictDto.ready }">
-                <select class="form-select form-select-sm bg-secondary border-secondary text-white"
+            <td class="form-select-sm" :class="{ 'bg-dark-green': dictDto.ready }">
+                <select class="form-select form-select-sm bg-dark border-secondary arrow-secondary text-white"
                         data-style="btn-secondary" v-model="dictDto.status" @change="change(dictDto.word, dictDto.status)">
 
                     <option value="LEARNING">Learning</option>

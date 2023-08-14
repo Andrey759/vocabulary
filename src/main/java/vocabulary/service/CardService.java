@@ -26,7 +26,7 @@ public class CardService {
     @Transactional
     public void updateAllEmptyFromChatGpt() {
         cardRepository.findAllBySentenceIsNull()
-                .forEach(chatGptService::sendAndParseCard);
+                .forEach(chatGptService::sendAndParseCardWithValidation);
     }
 
     @Transactional
@@ -60,7 +60,7 @@ public class CardService {
     @Transactional
     public CardDto another(String username, String word) {
         return cardRepository.findByUsernameAndWord(username, word)
-                .map(chatGptService::sendAndParseCard)
+                .map(chatGptService::sendAndParseCardWithValidation)
                 .map(cardRepository::save)
                 .map(card -> CardDto.from(card, null, null))
                 .orElse(CardDto.empty(null, null));
