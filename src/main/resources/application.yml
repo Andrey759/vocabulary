@@ -11,6 +11,9 @@ spring:
   jpa:
     open-in-view: false
 
+security:
+  ignoring-urls: /register, /css/**, /js/**, /test/**
+
 gpt:
   #token:
   model: gpt-3.5-turbo
