@@ -40,7 +40,7 @@ public class CardDto {
                 "No cards to repeat",
                 "",
                 "",
-                CardStatus.THREE_DAYS,
+                CardStatus.FIVE_DAYS,
                 finishedToday,
                 totalElements
         );

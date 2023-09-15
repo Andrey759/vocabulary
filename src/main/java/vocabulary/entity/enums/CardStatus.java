@@ -9,8 +9,10 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public enum CardStatus {
     LEARNING(dt -> dt.plusHours(10L)),
-    THREE_DAYS(dt -> dt.plusDays(3L).minusHours(6L)),
-    ONE_WEEK(dt -> dt.plusWeeks(1L).minusHours(6L)),
+    //THREE_DAYS(dt -> dt.plusDays(3L).minusHours(6L)),
+    FIVE_DAYS(dt -> dt.plusDays(5L).minusHours(6L)),
+    //ONE_WEEK(dt -> dt.plusWeeks(1L).minusHours(6L)),
+    //TEN_DAYS(dt -> dt.plusDays(10L).minusHours(6L)),
     TWO_WEEKS(dt -> dt.plusWeeks(2L).minusHours(6L)),
     ONE_MONTH(dt -> dt.plusMonths(1L).minusHours(6L)),
     TWO_MONTHS(dt -> dt.plusMonths(2L).minusHours(6L)),
