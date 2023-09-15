@@ -101,9 +101,13 @@ public class CardService {
                 username, LocalDateTime.now().minusHours(10L), LocalDateTime.now());
         long toRepeat = cardRepository.countCardsToRepeat(username, LocalDateTime.now());
         long totalElements = finishedToday + toRepeat;
+
+        // 1/10 for the first (instead of 0/10)
+        long finishedTodayCorrected = finishedToday < totalElements ? finishedToday + 1 : finishedToday;
+
         return cardOptional
-                .map(card -> CardDto.from(card, finishedToday, totalElements))
-                .orElse(CardDto.empty(finishedToday, totalElements));
+                .map(card -> CardDto.from(card, finishedTodayCorrected, totalElements))
+                .orElse(CardDto.empty(finishedTodayCorrected, totalElements));
     }
 
     private Card fillFieldsForReset(Card card) {

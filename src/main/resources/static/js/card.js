@@ -100,6 +100,11 @@ var card = new Vue({
                 setTimeout(() => this.buttonsEnabled = true, 1000);
             }
         },
+        handleSpaceKey(event) {
+            if (event.code === 'Space' && event.target.nodeName !== 'INPUT') {
+                this.speak();
+            }
+        },
         speak() {
             if (this.playing) {
                 card.playing = false;
@@ -118,5 +123,10 @@ var card = new Vue({
         setTimeout(() => { responsiveVoice.allowSpeechClicked(true); }, 1000);
         this.clearFieldsAndSetLoading();
         this.loadWithoutAutoplay();
+
+        document.addEventListener('keydown', this.handleSpaceKey);
+    },
+    beforeDestroy() {
+        document.removeEventListener('keydown', this.handleSpaceKey)
     }
 });

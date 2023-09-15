@@ -69,10 +69,15 @@ public class ChatGptService {
 
         return parsingService.parseMessages(username, newMessage, response);
     }
-    private String receive(String username, String message) {
+
+    public String receive(String username, String message) {
+        return receive(username, Collections.singletonList(new ChatMessage("user", message)));
+    }
+
+    public String receive(String username, List<ChatMessage> messageList) {
         ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
                 .model(gptModel)
-                .messages(Collections.singletonList(new ChatMessage("user", message)))
+                .messages(messageList)
                 .user(username)
                 .n(1)
                 .build();

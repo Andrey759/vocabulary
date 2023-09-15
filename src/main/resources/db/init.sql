@@ -1,5 +1,5 @@
 
-CREATE TABLE user (
+CREATE TABLE users (
     username VARCHAR(50) PRIMARY KEY,
     password VARCHAR(50),
     enabled BOOLEAN,
@@ -11,7 +11,7 @@ CREATE TABLE user (
     voice_volume DOUBLE
 );
 
-CREATE TABLE card (
+CREATE TABLE cards (
     id BIGINT PRIMARY KEY,
     username VARCHAR(50),
     word VARCHAR(50),
@@ -27,7 +27,7 @@ CREATE TABLE card (
     repeat_order INTEGER
 );
 
-CREATE TABLE message (
+CREATE TABLE messages (
     id BIGINT PRIMARY KEY,
     username VARCHAR(50),
     owner VARCHAR(50),
@@ -38,4 +38,11 @@ CREATE TABLE message (
     corrected_html VARCHAR(1000),
     perfect VARCHAR(1000),
     created_at TIMESTAMP(6)
+);
+
+CREATE TABLE telegram_messages (
+    id BIGINT PRIMARY KEY,
+    chat_id BIGINT,
+    message_role VARCHAR(50),
+    text VARCHAR
 );

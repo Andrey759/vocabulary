@@ -30,3 +30,7 @@ gpt:
       2 - The answer to my message, as if we were having a dialog,
       3 - The grammar correction of my message if it's wrong,
       4 - The perfect correction of my message, as a native speaker would say
+
+#telegram:
+  #token
+  #username:
