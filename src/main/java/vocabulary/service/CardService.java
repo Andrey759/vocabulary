@@ -13,6 +13,7 @@ import vocabulary.repository.CardRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static vocabulary.entity.enums.CardStatus.LEARNING;
 
@@ -25,8 +26,10 @@ public class CardService {
 
     @Transactional
     public void updateAllEmptyFromChatGpt() {
-        cardRepository.findAllBySentenceIsNull()
-                .forEach(chatGptService::sendAndParseCardWithValidation);
+        cardRepository.findTop10BySentenceIsNull()
+                .stream()
+                .map(card -> CompletableFuture.supplyAsync(() -> chatGptService.sendAndParseCardWithValidation(card)))
+                .forEach(future -> future.thenAccept(cardRepository::save).join());
     }
 
     @Transactional

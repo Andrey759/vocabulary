@@ -41,7 +41,7 @@ public class TelegramMessageService {
         telegramMessageRepository.save(systemMessage);
     }
 
-    @Transactional
+    //@Transactional
     public String generateAnswer(Long chatId, String userMessageText) {
         TelegramMessage userMessage = TelegramMessage.builder()
                 .chatId(chatId)

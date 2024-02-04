@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long> {
 
-    List<Card> findAllBySentenceIsNull();
+    List<Card> findTop10BySentenceIsNull();
     Optional<Card> findByUsernameAndWord(String username, String word);
     @Query(value = "SELECT * FROM cards " +
             "WHERE username = ?1 AND ready_at <= ?2 AND sentence IS NOT NULL " +

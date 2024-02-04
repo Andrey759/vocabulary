@@ -2,6 +2,7 @@ package vocabulary.telegram;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.abilitybots.api.bot.AbilityBot;
@@ -93,6 +94,6 @@ public class TelegramBot extends AbilityBot {
 
     @Override
     public long creatorId() {
-        return 1L;
+        return 2L;
     }
 }

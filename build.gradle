@@ -53,6 +53,24 @@ test {
     useJUnitPlatform()
 }
 
+task stop {
+    group 'publishing'
+    doLast {
+        exec {
+            commandLine 'ssh', 'root@185.201.28.190', "systemctl stop vocabulary"
+        }
+    }
+}
+
+task start {
+    group 'publishing'
+    doLast {
+        exec {
+            commandLine 'ssh', 'root@185.201.28.190', "systemctl start vocabulary"
+        }
+    }
+}
+
 task deploy {
     group 'publishing'
     dependsOn 'build'
@@ -71,7 +89,9 @@ task deploy {
 
 task logs {
     group 'publishing'
-    exec {
-        commandLine 'scp', 'root@185.201.28.190:/home/logs/*', 'prod/'
+    doLast {
+        exec {
+            commandLine 'scp', 'root@185.201.28.190:/home/logs/app.log', 'prod/'
+        }
     }
 }

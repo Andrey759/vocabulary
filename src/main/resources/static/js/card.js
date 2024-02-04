@@ -10,7 +10,7 @@ var card = new Vue({
         nextStatus: '',
         finishedToday: 0,
         totalElements: 0,
-        buttonsEnabled: true,
+        buttonsEnabled: false,
         explanationVisible: false,
         translationVisible: false,
         playing: false
@@ -30,6 +30,7 @@ var card = new Vue({
                 .catch(handleError);
         },
         reset() {
+            this.buttonsEnabled = false;
             fetch('/api/card/reset', {
                 method: 'POST',
                 body: this.word
@@ -42,6 +43,7 @@ var card = new Vue({
                 .catch(handleError);
         },
         another() {
+            this.buttonsEnabled = false;
             this.clearFieldsAndSetLoading();
             fetch('/api/card/another', {
                 method: 'POST',
@@ -53,6 +55,7 @@ var card = new Vue({
                 .catch(handleError);
         },
         next() {
+            this.buttonsEnabled = false;
             fetch('/api/card/next', {
                 method: 'POST',
                 body: this.word
@@ -70,11 +73,9 @@ var card = new Vue({
             this.explanationHtml = '';
             this.translationHtml = '';
             this.nextStatus = 'three days';
-            this.buttonsEnabled = false;
             this.explanationVisible = false;
             this.translationVisible = false;
             this.playing = false;
-            responsiveVoice.cancel();
         },
         handleResponse(response) {
             // Otherwise the picture would blink after each scheduled reloading
@@ -101,8 +102,21 @@ var card = new Vue({
             }
         },
         handleSpaceKey(event) {
+            if (event.code === 'ArrowLeft' && this.buttonsEnabled && event.target.nodeName !== 'INPUT') {
+                this.reset();
+                event.preventDefault();
+            }
+            if ((event.code === 'ArrowUp' || event.code === 'ArrowDown') && this.buttonsEnabled && event.target.nodeName !== 'INPUT') {
+                this.another();
+                event.preventDefault();
+            }
+            if (event.code === 'ArrowRight' && this.buttonsEnabled && event.target.nodeName !== 'INPUT') {
+                this.next();
+                event.preventDefault();
+            }
             if (event.code === 'Space' && event.target.nodeName !== 'INPUT') {
                 this.speak();
+                event.preventDefault();
             }
         },
         speak() {
@@ -115,12 +129,12 @@ var card = new Vue({
         }
     },
     mounted() {
-        $('.card-left, .card-right').on('click', function() {
-            $(this).css('user-select', 'none');
-        });
-        responsiveVoice.speak('');
-        //setTimeout(() => { responsiveVoice.allowSpeechClicked(true); }, 300);
-        setTimeout(() => { responsiveVoice.allowSpeechClicked(true); }, 1000);
+        // $('.card-left, .card-right').on('click', function() {
+        //     $(this).css('user-select', 'none');
+        // });
+        // responsiveVoice.speak('');
+        // //setTimeout(() => { responsiveVoice.allowSpeechClicked(true); }, 300);
+        // setTimeout(() => { responsiveVoice.allowSpeechClicked(true); }, 1000);
         this.clearFieldsAndSetLoading();
         this.loadWithoutAutoplay();
 

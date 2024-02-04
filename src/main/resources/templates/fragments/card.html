@@ -19,7 +19,7 @@
         </div>
         <div class="btn-group">
             <button class="btn btn-teal-blue" v-on:click="reset" :disabled="!buttonsEnabled">For tomorrow</button>
-            <button class="btn btn-teal" v-on:click="another" :disabled="!buttonsEnabled">Another context</button>
+            <button class="btn btn-teal" v-on:click="another" disabled="disabled">Another context</button>
             <button class="btn btn-teal-dark" v-on:click="next" v-text="'For ' + nextStatus" :disabled="!buttonsEnabled">For three days</button>
         </div>
     </div>

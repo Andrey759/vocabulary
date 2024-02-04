@@ -34,6 +34,7 @@ public class ChatGptService {
     @PostConstruct
     public void postConstruct() {
         service = new OpenAiService(gptToken);
+        log.info("gpt.token: {}", gptToken);
         log.info("gpt.message.card: {}", gptMessageCard);
         log.info("gpt.message.chat: {}", gptMessageChat);
     }

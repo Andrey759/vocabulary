@@ -10,4 +10,7 @@ application-prod.yml
 .idea
 *.iml
 
+### Telegram
+chat_gpt_759_bot
+
 TestController.java
