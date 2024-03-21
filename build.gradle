@@ -54,7 +54,7 @@ test {
 }
 
 task stop {
-    group 'publishing'
+    group 'vocabulary'
     doLast {
         exec {
             commandLine 'ssh', 'root@185.201.28.190', "systemctl stop vocabulary"
@@ -63,7 +63,7 @@ task stop {
 }
 
 task start {
-    group 'publishing'
+    group 'vocabulary'
     doLast {
         exec {
             commandLine 'ssh', 'root@185.201.28.190', "systemctl start vocabulary"
@@ -72,7 +72,7 @@ task start {
 }
 
 task deploy {
-    group 'publishing'
+    group 'vocabulary'
     dependsOn 'build'
     doLast {
         exec {
