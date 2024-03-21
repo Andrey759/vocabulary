@@ -13,7 +13,8 @@ var card = new Vue({
         buttonsEnabled: false,
         explanationVisible: false,
         translationVisible: false,
-        playing: false
+        playing: false,
+        dropdownActionsVisible: false
     },
     methods: {
         explanationClick() {
@@ -57,6 +58,20 @@ var card = new Vue({
         next() {
             this.buttonsEnabled = false;
             fetch('/api/card/next', {
+                method: 'POST',
+                body: this.word
+            })
+                .then(response => log(response))
+                .then(response => response.json())
+                .then(this.handleResponse)
+                .then(speakCardAuto)
+                .then(() => dict.update())
+                .catch(handleError);
+        },
+        status(newStatus) {
+            this.dropdownActionsVisible = false;
+            this.buttonsEnabled = false;
+            fetch('/api/card/status/' + newStatus, {
                 method: 'POST',
                 body: this.word
             })
@@ -139,6 +154,12 @@ var card = new Vue({
         this.loadWithoutAutoplay();
 
         document.addEventListener('keydown', this.handleSpaceKey);
+        let $btnDropdown = $('#btn-dropdown');
+        document.addEventListener('click', function(click) {
+            if (click.target !== $btnDropdown[0] && click.target !== $btnDropdown.children()[0]) {
+                card.dropdownActionsVisible = false;
+            }
+        });
     },
     beforeDestroy() {
         document.removeEventListener('keydown', this.handleSpaceKey)

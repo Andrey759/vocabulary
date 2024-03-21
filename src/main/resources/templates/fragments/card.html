@@ -20,7 +20,19 @@
         <div class="btn-group">
             <button class="btn btn-teal-blue" v-on:click="reset" :disabled="!buttonsEnabled">For tomorrow</button>
             <button class="btn btn-teal" v-on:click="another" disabled="disabled">Another context</button>
-            <button class="btn btn-teal-dark" v-on:click="next" v-text="'For ' + nextStatus" :disabled="!buttonsEnabled">For three days</button>
+            <button class="btn btn-teal-dark" style="padding-right: 0" v-on:click="next" v-text="'For ' + nextStatus" :disabled="!buttonsEnabled">For three days</button>
+            <button type="button" id="btn-dropdown" class="btn btn-teal-dark btn-lg padding-0" style="width: 0" v-on:click="dropdownActionsVisible = !dropdownActionsVisible" :disabled="!buttonsEnabled">
+                <i class="bi bi-caret-down"></i>
+            </button>
+            <div class="dropdown-menu bg-dark border-secondary arrow-secondary" style="transform: translate3d(106px, 52px, 0px); right: 0px;" :class="{ 'display-block': dropdownActionsVisible }">
+                <a href="#" class="dropdown-item bg-dark text-white" v-on:click="status('FIVE_DAYS')" >For five days</a>
+                <a href="#" class="dropdown-item bg-dark text-white" v-on:click="status('TWO_WEEKS')">For two weeks</a>
+                <a href="#" class="dropdown-item bg-dark text-white" v-on:click="status('ONE_MONTH')">For one month</a>
+                <a href="#" class="dropdown-item bg-dark text-white" v-on:click="status('TWO_MONTHS')">For two months</a>
+                <a href="#" class="dropdown-item bg-dark text-white" v-on:click="status('FOUR_MONTHS')">For four months</a>
+                <a href="#" class="dropdown-item bg-dark text-white" v-on:click="status('ONE_YEAR')">For one year</a>
+                <a href="#" class="dropdown-item bg-dark text-white" v-on:click="status('INFINITY')">Don't repeat</a>
+            </div>
         </div>
     </div>
 </div>

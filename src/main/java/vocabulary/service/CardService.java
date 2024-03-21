@@ -72,7 +72,15 @@ public class CardService {
     @Transactional
     public CardDto next(String username, String word) {
         cardRepository.findByUsernameAndWord(username, word)
-                .map(this::fillFieldsForNextStatus)
+                .map(card -> fillFieldsAfterStatusChange(card, card.getStatus().nextStatus()))
+                .map(cardRepository::save);
+        return getCardDtoToRepeat(username);
+    }
+
+    @Transactional
+    public CardDto status(String username, String word, CardStatus newStatus) {
+        cardRepository.findByUsernameAndWord(username, word)
+                .map(card -> fillFieldsAfterStatusChange(card, newStatus))
                 .map(cardRepository::save);
         return getCardDtoToRepeat(username);
     }
@@ -127,9 +135,8 @@ public class CardService {
         return card;
     }
 
-    private Card fillFieldsForNextStatus(Card card) {
+    private Card fillFieldsAfterStatusChange(Card card, CardStatus newStatus) {
         LocalDateTime now = LocalDateTime.now();
-        CardStatus newStatus = card.getStatus().nextStatus();
         card.setResponse(null);
         card.setSentence(null);
         card.setSentenceHtml(null);

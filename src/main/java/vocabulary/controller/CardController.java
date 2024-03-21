@@ -3,11 +3,9 @@ package vocabulary.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vocabulary.controller.dto.CardDto;
+import vocabulary.entity.enums.CardStatus;
 import vocabulary.service.CardService;
 
 import java.security.Principal;
@@ -55,6 +53,13 @@ public class CardController {
     public ResponseEntity<CardDto> postNext(Principal principal, @RequestBody String word) {
         log.info("[{}] POST /api/card/next {}", principal.getName(), word);
         CardDto cardDto = cardService.next(principal.getName(), word);
+        return ResponseEntity.ok(cardDto);
+    }
+
+    @PostMapping("/api/card/status/{newStatus}")
+    public ResponseEntity<CardDto> postNext(Principal principal, @RequestBody String word, @PathVariable CardStatus newStatus) {
+        log.info("[{}] POST /api/card/status/{} {}", principal.getName(), newStatus, word);
+        CardDto cardDto = cardService.status(principal.getName(), word, newStatus);
         return ResponseEntity.ok(cardDto);
     }
 }
