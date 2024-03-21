@@ -88,7 +88,7 @@ task deploy {
 }
 
 task logs {
-    group 'publishing'
+    group 'vocabulary'
     doLast {
         exec {
             commandLine 'scp', 'root@185.201.28.190:/home/logs/app.log', 'prod/'
