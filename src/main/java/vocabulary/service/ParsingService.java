@@ -25,6 +25,9 @@ public class ParsingService {
         String sentenceHtml = lines.get(1);
         String explanationHtml = lines.get(2);
         String translationHtml = lines.get(3);
+        if (sentence.contains(card.getWord())) {
+            sentenceHtml = sentence.replaceAll(card.getWord(), "<b>" + card.getWord() + "</b>");
+        }
         if (explanationHtml.contains("means")) {
             explanationHtml = explanationHtml.split("means")[1].trim();
             explanationHtml = explanationHtml.substring(0, 1).toUpperCase() + explanationHtml.substring(1);
