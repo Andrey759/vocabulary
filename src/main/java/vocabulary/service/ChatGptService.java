@@ -1,9 +1,10 @@
 package vocabulary.service;
 
-import com.theokanning.openai.completion.chat.ChatCompletionChoice;
-import com.theokanning.openai.completion.chat.ChatCompletionRequest;
-import com.theokanning.openai.completion.chat.ChatMessage;
-import com.theokanning.openai.service.OpenAiService;
+import io.github.sashirestela.openai.SimpleOpenAI;
+import io.github.sashirestela.openai.domain.chat.ChatRequest;
+import io.github.sashirestela.openai.domain.chat.content.ContentPartText;
+import io.github.sashirestela.openai.domain.chat.message.ChatMsg;
+import io.github.sashirestela.openai.domain.chat.message.ChatMsgUser;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class ChatGptService {
     private final ParsingService parsingService;
-    private OpenAiService service;
+    private SimpleOpenAI openai;
     @Value("${gpt.token}")
     private String gptToken;
     @Value("${gpt.model}")
@@ -33,7 +34,11 @@ public class ChatGptService {
 
     @PostConstruct
     public void postConstruct() {
-        service = new OpenAiService(gptToken);
+        this.openai = SimpleOpenAI.builder()
+                .apiKey(gptToken)
+                //.organizationId(System.getenv("OPENAI_ORGANIZATION_ID"))
+                //.projectId(System.getenv("OPENAI_PROJECT_ID"))
+                .build();
         log.info("gpt.token: {}", gptToken);
         log.info("gpt.message.card: {}", gptMessageCard);
         log.info("gpt.message.chat: {}", gptMessageChat);
@@ -72,32 +77,30 @@ public class ChatGptService {
     }
 
     public String receive(String username, String message) {
-        return receive(username, Collections.singletonList(new ChatMessage("user", message)));
+        return receive(username, Collections.singletonList(new ChatMsgUser(message)));
     }
 
-    public String receive(String username, List<ChatMessage> messageList) {
-        ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
+    public String receive(String username, List<ChatMsg> messageList) {
+        ChatRequest chatRequest = ChatRequest.builder()
                 .model(gptModel)
                 .messages(messageList)
                 .user(username)
-                .n(1)
+                .temperature(0.0)   // Rhe level of randomness in the generated text.
+                                    // A higher temperature value will result in more diverse and creative responses
+                //.maxTokens(500)   // max words or characters (need to test)
+                .n(1)            // number of responses
                 .build();
 
-        String response = service.createChatCompletion(completionRequest)
-                .getChoices()
-                .stream()
-                .findFirst()
-                .map(ChatCompletionChoice::getMessage)
-                .map(ChatMessage::getContent)
-                .orElse("")
-                .replaceAll("\n\n", "\n");
+        String response = openai.chatCompletions().create(chatRequest).join().firstContent();
+
+        response = response.replaceAll("\n\n", "\n");   // TODO: move to a specific service
 
         log.info("ChatGPT response:\n{}", response);
         return response;
     }
 
     private static final Pattern INVALID_TRANSLATION_PATTERN = Pattern.compile("<b>[A-z0-9-' ]+</b>");
-    private boolean isValidCardResponse(Card card) {
+    private boolean isValidCardResponse(Card card) {     // TODO: move to a specific service
         if (!card.getSentenceHtml().contains("<b>")) {
             return false;
         }

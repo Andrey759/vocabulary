@@ -1,7 +1,7 @@
 package vocabulary.telegram;
 
-import com.theokanning.openai.completion.chat.ChatMessage;
-import com.theokanning.openai.completion.chat.ChatMessageRole;
+import io.github.sashirestela.openai.domain.chat.Role;
+import io.github.sashirestela.openai.domain.chat.message.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +35,7 @@ public class TelegramMessageService {
     public void saveSystemMessage(Long chatId, String userMessageText) {
         TelegramMessage systemMessage = TelegramMessage.builder()
                 .chatId(chatId)
-                .messageRole(ChatMessageRole.SYSTEM)
+                .messageRole(Role.SYSTEM)
                 .text(userMessageText)
                 .build();
         telegramMessageRepository.save(systemMessage);
@@ -45,15 +45,20 @@ public class TelegramMessageService {
     public String generateAnswer(Long chatId, String userMessageText) {
         TelegramMessage userMessage = TelegramMessage.builder()
                 .chatId(chatId)
-                .messageRole(ChatMessageRole.USER)
+                .messageRole(Role.USER)
                 .text(userMessageText)
                 .build();
 
         List<TelegramMessage> messageList = telegramMessageRepository.findByChatId(chatId);
         messageList.add(userMessage);
 
-        List<ChatMessage> chatMessageList = messageList.stream()
-                .map(tm -> new ChatMessage(tm.getMessageRole().value(), tm.getText()))
+        List<ChatMsg> chatMessageList = messageList.stream()
+                .map(tm -> switch (tm.getMessageRole()) {
+                    case SYSTEM -> new ChatMsgSystem(tm.getText());
+                    case USER -> new ChatMsgUser(tm.getText());
+                    case ASSISTANT -> new ChatMsgAssistant(tm.getText());
+                    case TOOL -> throw new RuntimeException("MessageRole TOOL is not supported.");
+                })
                 .toList();
 
         String generatedText = chatGptService.receive(
@@ -62,7 +67,7 @@ public class TelegramMessageService {
 
         TelegramMessage generatedMessage = TelegramMessage.builder()
                 .chatId(chatId)
-                .messageRole(ChatMessageRole.ASSISTANT)
+                .messageRole(Role.ASSISTANT)
                 .text(generatedText)
                 .build();
 
