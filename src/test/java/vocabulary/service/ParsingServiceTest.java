@@ -19,6 +19,7 @@ public class ParsingServiceTest {
                 "4. Она добавила всего лишь немного соли в суп, чтобы усилить его вкус.";
 
         Card card = new Card();
+        card.setWord("smidge");
         card.setResponse(response);
         parsingService.parseAndFillCard(card);
 

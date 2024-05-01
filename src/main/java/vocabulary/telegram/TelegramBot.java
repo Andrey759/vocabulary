@@ -1,8 +1,8 @@
 package vocabulary.telegram;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.abilitybots.api.bot.AbilityBot;
@@ -76,6 +76,7 @@ public class TelegramBot extends AbilityBot {
         silent.send("The system message has saved", chatId);
     }
 
+    @SneakyThrows
     private void generateAnswer(Long chatId, String userMessageText) {
         Optional<Message> emptyMessageOptional = silent.send("...", chatId);
         if (emptyMessageOptional.isEmpty()) {
@@ -89,6 +90,9 @@ public class TelegramBot extends AbilityBot {
                 .messageId(emptyMessageOptional.get().getMessageId())
                 .text(generatedText)
                 .build();
+
+        editMessage.enableMarkdown(true);
+
         silent.execute(editMessage);
     }
 
