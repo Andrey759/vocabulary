@@ -12,6 +12,7 @@ application-prod.yml
 *.iml
 
 ### Telegram
-chat_gpt_759_bot
+chat_gpt_759_*
+vocabulary_expert_bot
 
 TestController.java
