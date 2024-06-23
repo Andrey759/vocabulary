@@ -94,10 +94,35 @@ task backup {
     def backupFileName = new Date().format('yyyy-MM-dd') + ".sql"
     doLast {
         exec {
-            commandLine 'ssh', 'root@185.201.28.190', "pg_dump -U postgres -h localhost -f /home/backups/${backupFileName}"
+            commandLine 'echo', "Backup file name: backups/${backupFileName}"
+        }
+        exec {
+            commandLine 'ssh', 'root@185.201.28.190', "pg_dump -U postgres -h localhost -f /home/backups/${backupFileName} --clean"
         }
         exec {
             commandLine 'scp', "root@185.201.28.190:/home/backups/${backupFileName}", "backups/${backupFileName}"
+        }
+        exec {
+            commandLine 'ssh', 'root@185.201.28.190', "rm /home/backups/${backupFileName}"
+        }
+    }
+}
+
+task restore {
+    group 'database'
+    def backupFileName = file('./backups').listFiles().max { it.lastModified() }.name
+    doLast {
+        exec {
+            commandLine 'echo', "Backup file name: backups/${backupFileName}"
+        }
+        exec {
+            commandLine 'scp', "backups/${backupFileName}", "root@185.201.28.190:/home/backups/${backupFileName}"
+        }
+        exec {
+            commandLine 'ssh', 'root@185.201.28.190', "psql -U postgres -h localhost -f /home/backups/${backupFileName}"
+        }
+        exec {
+            commandLine 'ssh', 'root@185.201.28.190', "rm /home/backups/${backupFileName}"
         }
     }
 }
