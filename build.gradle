@@ -31,7 +31,7 @@ dependencies {
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation 'org.apache.httpcomponents.client5:httpclient5:5.3.1'
     //implementation 'com.theokanning.openai-gpt3-java:service:0.18.2'
-    implementation 'io.github.sashirestela:simple-openai:2.3.2' exclude group: 'org.slf4j'
+    implementation 'io.github.sashirestela:simple-openai:3.5.0' exclude group: 'org.slf4j'
     implementation 'org.telegram:telegrambots-spring-boot-starter:6.9.7.1'
     implementation 'org.telegram:telegrambots-abilities:6.9.7.1'
 
@@ -85,6 +85,19 @@ task deploy {
         }
         exec {
             commandLine 'ssh', 'root@185.201.28.190', "systemctl start vocabulary"
+        }
+    }
+}
+
+task backup {
+    group 'database'
+    def backupFileName = new Date().format('yyyy-MM-dd') + ".sql"
+    doLast {
+        exec {
+            commandLine 'ssh', 'root@185.201.28.190', "pg_dump -U postgres -h localhost -f /home/backups/${backupFileName}"
+        }
+        exec {
+            commandLine 'scp', "root@185.201.28.190:/home/backups/${backupFileName}", "backups/${backupFileName}"
         }
     }
 }

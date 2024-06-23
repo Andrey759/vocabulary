@@ -1,6 +1,6 @@
-package vocabulary.telegram;
+package vocabulary.experiments.telegram;
 
-import io.github.sashirestela.openai.domain.chat.Role;
+import io.github.sashirestela.openai.domain.chat.ChatMessage.ChatRole;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,6 +19,6 @@ public class TelegramMessage {
     private Long id;
     private Long chatId;
     @Enumerated(value = STRING)
-    private Role messageRole;
+    private ChatRole messageRole;
     private String text;
 }

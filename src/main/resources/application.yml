@@ -16,7 +16,7 @@ security:
 
 gpt:
   #token:
-  model: gpt-3.5-turbo
+  model: gpt-4-turbo
   message:
     card: |
       Generate a sentence with the word '%s' that clearly conveys its meaning. Provide the answer in 4 lines without excess symbols, braces and quotes:

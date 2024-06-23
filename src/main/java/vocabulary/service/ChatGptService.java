@@ -1,18 +1,21 @@
 package vocabulary.service;
 
 import io.github.sashirestela.openai.SimpleOpenAI;
+import io.github.sashirestela.openai.domain.audio.SpeechRequest;
+import io.github.sashirestela.openai.domain.audio.TranscriptionRequest;
+import io.github.sashirestela.openai.domain.chat.ChatMessage;
+import io.github.sashirestela.openai.domain.chat.ChatMessage.UserMessage;
 import io.github.sashirestela.openai.domain.chat.ChatRequest;
-import io.github.sashirestela.openai.domain.chat.content.ContentPartText;
-import io.github.sashirestela.openai.domain.chat.message.ChatMsg;
-import io.github.sashirestela.openai.domain.chat.message.ChatMsgUser;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import vocabulary.entity.Card;
 import vocabulary.entity.Message;
 
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -77,17 +80,21 @@ public class ChatGptService {
     }
 
     public String receive(String username, String message) {
-        return receive(username, Collections.singletonList(new ChatMsgUser(message)));
+        return receive(username, Collections.singletonList(UserMessage.of(message)));
     }
 
-    public String receive(String username, List<ChatMsg> messageList) {
+    public String receive(String username, List<ChatMessage> messageList) {
+        return receive(username, messageList, null);
+    }
+
+    public String receive(String username, List<ChatMessage> messageList, Integer maxWords) {
         ChatRequest chatRequest = ChatRequest.builder()
                 .model(gptModel)
                 .messages(messageList)
                 .user(username)
                 .temperature(0.0)   // Rhe level of randomness in the generated text.
                                     // A higher temperature value will result in more diverse and creative responses
-                //.maxTokens(500)   // max words or characters (need to test)
+                .maxTokens(maxWords)     // max words or characters (need to test)
                 .n(1)            // number of responses
                 .build();
 
@@ -109,5 +116,26 @@ public class ChatGptService {
             return false;
         }
         return true;
+    }
+
+    public String speechToText(Path path, String language) {
+        TranscriptionRequest audioRequest = TranscriptionRequest.builder()
+                .file(path)
+                .model("whisper-1")
+                .language(language)
+                .build();
+        return openai.audios().transcribePlain(audioRequest).join();
+    }
+
+    @SneakyThrows
+    public byte[] textToSpeech(String input) {
+        SpeechRequest speechRequest = SpeechRequest.builder()
+                .model("tts-1")
+                .input(input)
+                .voice(SpeechRequest.Voice.NOVA)
+                .responseFormat(SpeechRequest.SpeechResponseFormat.OPUS)
+                .speed(0.9)
+                .build();
+        return openai.audios().speak(speechRequest).join().readAllBytes();
     }
 }

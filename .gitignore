@@ -1,5 +1,6 @@
 .gradle
 build/
+backups/
 logs/
 prod/
 !gradle/wrapper/gradle-wrapper.jar
