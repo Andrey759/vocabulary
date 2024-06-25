@@ -2,6 +2,7 @@
 CREATE TABLE users (
     username VARCHAR(50) PRIMARY KEY,
     password VARCHAR(50),
+    telegram_chat_id BIGINT UNIQUE,
     enabled BOOLEAN,
     voice_enabled BOOLEAN,
     voice_card VARCHAR(50),

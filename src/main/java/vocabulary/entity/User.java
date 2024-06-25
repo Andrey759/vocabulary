@@ -22,6 +22,7 @@ public class User {
     @Id
     private String username;
     private String password;
+    private Long telegramChatId;
     private Boolean enabled;
 
     private Boolean voiceEnabled;
