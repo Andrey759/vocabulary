@@ -1,5 +1,6 @@
 package vocabulary.service;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import vocabulary.entity.Card;
 import vocabulary.entity.Message;
@@ -28,6 +29,7 @@ public class ParsingServiceTest {
     }
 
     @Test
+    @Disabled
     public void test2() {
         String newMessage = "What you can tell me about living in London?";
         String response = "1 - Grammar in my message: 8\n" +

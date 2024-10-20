@@ -92,10 +92,10 @@ public class ChatGptService {
                 .model(gptModel)
                 .messages(messageList)
                 .user(username)
-                .temperature(0.0)   // Rhe level of randomness in the generated text.
-                                    // A higher temperature value will result in more diverse and creative responses
-                .maxTokens(maxWords)     // max words or characters (need to test)
-                .n(1)            // number of responses
+                .temperature(0.0)       // Rhe level of randomness in the generated text.
+                                        // A higher temperature value will result in more diverse and creative responses
+                .maxTokens(maxWords)    // max words or characters (need to test)
+                .n(1)                // number of responses
                 .build();
 
         String response = openai.chatCompletions().create(chatRequest).join().firstContent();

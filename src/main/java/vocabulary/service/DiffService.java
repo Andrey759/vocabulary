@@ -5,12 +5,8 @@ import io.micrometer.common.util.StringUtils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.springframework.stereotype.Service;
 import vocabulary.service.dto.ChunkDto;
@@ -31,6 +27,7 @@ import static vocabulary.service.enums.ChunkType.equal;
 
 @Service
 @Slf4j
+@Deprecated
 public class DiffService {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final Function<String, String> FORMAT_RM = str -> String.format("<span class=\"rm\">%s</span>", str);
@@ -171,14 +168,16 @@ public class DiffService {
         Map<String, Object> map = Map.of("left", left, "right", right);
         HttpEntity httpEntity = new StringEntity(OBJECT_MAPPER.writeValueAsString(map), ContentType.APPLICATION_JSON);
         httpPost.setEntity(httpEntity);
-        try (CloseableHttpClient client = HttpClients.createDefault();
-             CloseableHttpResponse response = client.execute(httpPost)
-        ) {
-            String content = EntityUtils.toString(response.getEntity());
-            log.info(content);
-            return content.contains("FREE_DIFF_LIMIT_EXCEEDED")
-                    ? null
-                    : OBJECT_MAPPER.readValue(content, DiffDto.class);
-        }
+        // TODO: remove
+//        try (CloseableHttpClient client = HttpClients.createDefault();
+//             CloseableHttpResponse response = client.execute(httpPost)
+//        ) {
+//            String content = EntityUtils.toString(response.getEntity());
+//            log.info(content);
+//            return content.contains("FREE_DIFF_LIMIT_EXCEEDED")
+//                    ? null
+//                    : OBJECT_MAPPER.readValue(content, DiffDto.class);
+//        }
+        return new DiffDto();
     }
 }

@@ -22,28 +22,38 @@ public class TelegramMessageService {
     private final ChatGptService chatGptService;
 
     @Transactional
-    public void clearHistory(Long chatId) {
-        telegramMessageRepository.deleteByChatId(chatId);
-    }
-
-    @Transactional
-    public void saveSystemMessage(Long chatId, String userMessageText) {
+    public void saveAssistantMessage(String username, Long chatId, String messageText) {
         TelegramMessage systemMessage = TelegramMessage.builder()
                 .chatId(chatId)
-                .messageRole(SYSTEM)
-                .text(userMessageText)
+                .messageRole(ASSISTANT)
+                .text(messageText)
                 .build();
         telegramMessageRepository.save(systemMessage);
     }
 
     @Transactional
-    public String generateAnswer(Long chatId, Path audioFilePath, String language) {
-        String userMessageText = chatGptService.speechToText(audioFilePath, language);
-        return generateAnswer(userMessageText, chatId);
+    public void clearHistory(Long chatId) {
+        telegramMessageRepository.deleteByChatId(chatId);
     }
 
     @Transactional
-    public String generateAnswer(String userMessageText, Long chatId) {
+    public void saveSystemMessage(String username, Long chatId, String messageText) {
+        TelegramMessage systemMessage = TelegramMessage.builder()
+                .chatId(chatId)
+                .messageRole(SYSTEM)
+                .text(messageText)
+                .build();
+        telegramMessageRepository.save(systemMessage);
+    }
+
+    @Transactional
+    public String generateAnswer(String username, Long chatId, Path audioFilePath, String language) {
+        String userMessageText = chatGptService.speechToText(audioFilePath, language);
+        return generateAnswer(username, chatId, userMessageText);
+    }
+
+    @Transactional
+    public String generateAnswer(String username, Long chatId, String userMessageText) {
         TelegramMessage userMessage = TelegramMessage.builder()
                 .chatId(chatId)
                 .messageRole(USER)

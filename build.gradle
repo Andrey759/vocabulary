@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
     id 'maven-publish'
-    id 'org.springframework.boot' version '3.3.2'
+    id 'org.springframework.boot' version '3.3.4'
     id 'io.spring.dependency-management' version '1.1.6'
 }
 
@@ -27,20 +27,22 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    implementation 'org.postgresql:postgresql:42.7.3'
+    implementation 'org.postgresql:postgresql:42.7.4'
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
-    implementation 'org.apache.httpcomponents.client5:httpclient5:5.3.1'
+    implementation 'org.apache.httpcomponents.client5:httpclient5:5.3'
     //implementation 'com.theokanning.openai-gpt3-java:service:0.18.2'
-    implementation 'io.github.sashirestela:simple-openai:3.5.0' exclude group: 'org.slf4j'
-    implementation 'org.telegram:telegrambots-spring-boot-starter:6.9.7.1'
-    implementation 'org.telegram:telegrambots-abilities:6.9.7.1'
+    implementation 'io.github.sashirestela:simple-openai:3.8.2' exclude group: 'org.slf4j'
+    //implementation 'org.telegram:telegrambots-spring-boot-starter:6.9.7.1'
+    implementation 'org.telegram:telegrambots-longpolling:7.10.0'
+    implementation 'org.telegram:telegrambots-client:7.10.0'
+    //implementation 'org.telegram:telegrambots-abilities:7.10.0'
 
     // annotation processors
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.2'
 }
 
 bootJar {

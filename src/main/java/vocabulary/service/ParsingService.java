@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.time.temporal.ChronoField.MILLI_OF_DAY;
 import static vocabulary.controller.enums.MessageOwner.BOT;
 import static vocabulary.controller.enums.MessageOwner.USER;
 
@@ -50,7 +49,7 @@ public class ParsingService {
         String answer = lines.get(1);
         String corrected = lines.get(2);
         String perfect = lines.get(3);
-        String correctedHtml = diffService.calculateCorrectedHtml(newMessage, corrected);
+        //String correctedHtml = diffService.calculateCorrectedHtml(newMessage, corrected);
 
         Message userMessageDto = new Message(
                 null,
@@ -60,7 +59,7 @@ public class ParsingService {
                 newMessage,
                 response,
                 corrected,
-                correctedHtml,
+                null,
                 perfect,
                 LocalDateTime.now()
         );

@@ -19,5 +19,5 @@ public class TelegramVocabularyBotProperties {
     private String maxTokens;
     private SpeechRequest.Voice voice;
     private Double speed;
-    private Boolean logging;
+    private Boolean logging = false;
 }
