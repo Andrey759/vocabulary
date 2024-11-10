@@ -27,7 +27,6 @@ public class TelegramBot implements LongPollingSingleThreadUpdateConsumer {
     private final TelegramClient client;
     private final TelegramMessageService messageService;
     private final String username;
-    private final String token;
     private final String startMessage;
     private final String userLanguage;
     private final SpeechRequest.Voice voice;
@@ -41,7 +40,6 @@ public class TelegramBot implements LongPollingSingleThreadUpdateConsumer {
         this.client = new OkHttpTelegramClient(properties.getToken());
         this.messageService = messageService;
         this.username = properties.getUsername();
-        this.token = properties.getToken();
         this.startMessage = properties.getStartMessage();
         this.userLanguage = properties.getUserLanguage();
         this.voice = properties.getVoice();
